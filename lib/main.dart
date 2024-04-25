@@ -6,8 +6,8 @@ import 'package:url_strategy/url_strategy.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   KakaoSdk.init(
-    nativeAppKey: '${YOUR_NATIVE_APP_KEY}',
-    javaScriptAppKey: '${YOUR_JAVASCRIPT_APP_KEY}',
+    nativeAppKey: 'c62390a0a0aa054d39932a799620902d',
+    javaScriptAppKey: '2aac375b171401d7a6db18aeae10e7eb',
   );
   setPathUrlStrategy();
   runApp(const MyApp());

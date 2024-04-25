@@ -37,6 +37,7 @@ class _SampleScreenState extends State<SampleScreen> {
       );
 
       final profileInfo = json.decode(response.body);
+
       print(profileInfo.toString());
 
       setState(() {
@@ -50,16 +51,8 @@ class _SampleScreenState extends State<SampleScreen> {
 
   void signOut() async {
     switch (_loginPlatform) {
-      case LoginPlatform.facebook:
-        break;
-      case LoginPlatform.google:
-        break;
       case LoginPlatform.kakao:
         await UserApi.instance.logout();
-        break;
-      case LoginPlatform.naver:
-        break;
-      case LoginPlatform.apple:
         break;
       case LoginPlatform.none:
         break;
@@ -115,7 +108,8 @@ class _SampleScreenState extends State<SampleScreen> {
           const Color(0xff0165E1),
         ),
       ),
-      child: const Text('로그아웃'),
+      child: const Text('로그아웃',
+      style: TextStyle(color: Colors.black)),
     );
   }
 }
