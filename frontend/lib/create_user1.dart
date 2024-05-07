@@ -115,8 +115,8 @@ class ProfileViewScreenState extends State<ProfileViewScreen>{
 class Profile{
   String name;
   String email;
-  String password='';
-  String confirm_password = '';
+  String password;
+  String confirm_password;
   String account;
 
   Profile({required this.name, required this.email, required this.password, required this.account, required this.confirm_password});
