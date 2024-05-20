@@ -1,5 +1,5 @@
 package com.example.spring_team8.Controller;
-
+import com.example.spring_team8.Entity.Survey;
 import com.example.spring_team8.Entity.UserSurvey;
 import com.example.spring_team8.Service.UserSurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-
+import java.util.Optional;
 
 
 @RestController
@@ -25,10 +25,14 @@ public class UserSurveyController {
 
     @GetMapping("/{id}")
     public ResponseEntity<UserSurvey> getUserSurveyById(@PathVariable("id") Long id) {
-        UserSurvey userSurvey = userSurveyService.getUserSurveyById(id);
-        return new ResponseEntity<>(userSurvey, HttpStatus.OK);
+        Optional<UserSurvey> userSurvey = userSurveyService.getUserSurveyById(id);
+        if (userSurvey.isPresent()) {
+            return new ResponseEntity<>(userSurvey.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
-
+    
     @PostMapping
     public ResponseEntity<UserSurvey> createUserSurvey(@RequestBody UserSurvey userSurvey) {
         UserSurvey createdUserSurvey = userSurveyService.createOrUpdateUserSurvey(userSurvey);
@@ -37,7 +41,7 @@ public class UserSurveyController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserSurvey> updateUserSurvey(@PathVariable("id") Long id, @RequestBody UserSurvey userSurvey) {
-        userSurvey.setId(id);
+        userSurvey.setUserSurveyId(id);
         UserSurvey updatedUserSurvey = userSurveyService.createOrUpdateUserSurvey(userSurvey);
         return new ResponseEntity<>(updatedUserSurvey, HttpStatus.OK);
     }
@@ -47,4 +51,12 @@ public class UserSurveyController {
         userSurveyService.deleteUserSurvey(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/surveys/{userId}/{groupId}")
+    public List<Survey> getSurveysByUserIdAndGroupId(@PathVariable Long userId, @PathVariable Long groupId) {
+        return userSurveyService.getSurveysByUserIdAndGroupId(userId, groupId);
+    }
+
+
+
 }

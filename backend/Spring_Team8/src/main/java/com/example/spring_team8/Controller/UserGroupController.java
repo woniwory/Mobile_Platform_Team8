@@ -48,22 +48,22 @@ public class UserGroupController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/{groupId}/survey-count")
-    public ResponseEntity<Integer> getSurveyCountByGroupId(@PathVariable("groupId") Long groupId) {
-        int surveyCount = userGroupService.getSurveyCountByGroupId(groupId);
-        return new ResponseEntity<>(surveyCount, HttpStatus.OK);
-    }
-    @GetMapping("/{groupId}/group-count")
-    public ResponseEntity<Integer> getGroupCountByGroupId(@PathVariable("groupId") Long groupId) {
-        int surveyCount = userGroupService.getGroupCountByGroupId(groupId);
-        return new ResponseEntity<>(surveyCount, HttpStatus.OK);
-    }
-
-    @GetMapping("/{groupId}/survey-titles")
-    public ResponseEntity<List<String>> getSurveyTitlesByGroupId(@PathVariable("groupId") Long groupId) {
-        List<String> surveyTitles = userGroupService.getSurveyTitlesByGroupId(groupId);
-        return new ResponseEntity<>(surveyTitles, HttpStatus.OK);
-    }
+//    @GetMapping("/{groupId}/survey-count")
+//    public ResponseEntity<Integer> getSurveyCountByGroupId(@PathVariable("groupId") Long groupId) {
+//        int surveyCount = userGroupService.getSurveyCountByGroupId(groupId);
+//        return new ResponseEntity<>(surveyCount, HttpStatus.OK);
+//    }
+//    @GetMapping("/{groupId}/group-count")
+//    public ResponseEntity<Integer> getGroupCountByGroupId(@PathVariable("groupId") Long groupId) {
+//        int surveyCount = userGroupService.getGroupCountByGroupId(groupId);
+//        return new ResponseEntity<>(surveyCount, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/{groupId}/survey-titles")
+//    public ResponseEntity<List<String>> getSurveyTitlesByGroupId(@PathVariable("groupId") Long groupId) {
+//        List<String> surveyTitles = userGroupService.getSurveyTitlesByGroupId(groupId);
+//        return new ResponseEntity<>(surveyTitles, HttpStatus.OK);
+//    }
 
 
 }

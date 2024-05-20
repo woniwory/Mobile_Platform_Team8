@@ -1,19 +1,22 @@
 package com.example.spring_team8.Service;
 
+import com.example.spring_team8.Entity.Survey;
 import com.example.spring_team8.Entity.User;
+import com.example.spring_team8.Entity.UserSurvey;
 import com.example.spring_team8.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
+    private UserSurveyService userSurveyRepository;
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -42,5 +45,13 @@ public class UserService {
 
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
+    }
+
+
+    public List<Survey> getUserSurveys(Long userId) {
+        Optional<UserSurvey> userSurveys = userSurveyRepository.findByUserId(userId);
+        return userSurveys.stream()
+                .map(UserSurvey::getSurvey)
+                .collect(Collectors.toList());
     }
 }

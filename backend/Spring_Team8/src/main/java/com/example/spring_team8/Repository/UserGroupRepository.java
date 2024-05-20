@@ -9,7 +9,6 @@ import java.util.List;
 
 @Repository
 public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
-    List<UserGroup> findByGroup_Id(Long groupId); // Correct the property name to match the Group entity's primary key
-    @Query("SELECT ug.survey.surveyTitle FROM UserGroup ug WHERE ug.group.id = :groupId")
-    List<String> findSurveyTitlesByGroupId(Long groupId);
+
+
 }

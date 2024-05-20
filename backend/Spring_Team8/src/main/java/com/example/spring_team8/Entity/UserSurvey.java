@@ -11,11 +11,12 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "user_survey")
+
 public class UserSurvey {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userSurveyId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -25,7 +26,9 @@ public class UserSurvey {
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
+
     private boolean isAdmin;
+
 
 
 }

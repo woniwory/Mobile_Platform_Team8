@@ -46,4 +46,11 @@ public class ResponseController {
         responseService.deleteResponse(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+
+    @GetMapping("/user/{userId}/question/{questionId}")
+    public List<Response> getResponsesByUserIdAndQuestionId(@PathVariable Long userId, @PathVariable Long questionId) {
+        return responseService.getResponsesByUserIdAndQuestionId(userId, questionId);
+    }
+
 }
