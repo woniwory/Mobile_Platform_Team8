@@ -1,161 +1,151 @@
-import "package:flutter/material.dart";
-import "create_user1.dart";
+import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/material.dart';
 
+class Survey {
+  final String title;
+  final List<Question> questions;
 
+  Survey({required this.title, required this.questions});
 
-class ProfileEditScreen extends StatefulWidget{
-  final Profile? profile; // /? : Profile가 null이 될 수도 있다
+  factory Survey.fromJson(Map<String, dynamic> json) {
+    List<dynamic> questionsJson = json['questions'];
+    List<Question> parsedQuestions =
+    questionsJson.map((q) => Question.fromJson(q)).toList();
 
-  const ProfileEditScreen({super.key, this.profile});
-
-  @override
-  ProfileEditScreenState createState() => ProfileEditScreenState();
-
+    return Survey(title: json['title'], questions: parsedQuestions);
+  }
 }
 
-class ProfileEditScreenState extends State<ProfileEditScreen> {
-  final _formkey = GlobalKey<FormState>();
-  String? _name; // 사용자 데이터 입력 받는 부분
-  String? _email; // 사용자 데이터 입력 받는 부분
-  String? _password; // 사용자 데이터 입력 받는 부분
-  String? _confirm_password; // 사용자 데이터 입력 받는 부분
-  String? _account; // 사용자 데이터 입력 받는 부분
+class Question {
+  final String text;
+  final String type;
+  final List<String>? choices;
 
-  // widget 생명 주기에서 가장 먼저 수행
+  Question({required this.text, required this.type, this.choices});
+
+  factory Question.fromJson(Map<String, dynamic> json) {
+    List<dynamic>? choicesJson = json['choices'];
+    List<String>? parsedChoices =
+    choicesJson?.map((choice) => choice.toString()).toList();
+
+    return Question(
+      text: json['text'],
+      type: json['type'],
+      choices: parsedChoices,
+    );
+  }
+}
+
+void main() {
+  runApp(SurveyExecutionApp());
+}
+
+class SurveyExecutionApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Survey Execution App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: SurveyExecutionPage(),
+    );
+  }
+}
+
+class SurveyExecutionPage extends StatefulWidget {
+  @override
+  _SurveyExecutionPageState createState() => _SurveyExecutionPageState();
+}
+
+class _SurveyExecutionPageState extends State<SurveyExecutionPage> {
+  late List<Question> questions;
+
+  @override
   void initState() {
     super.initState();
-    if (widget.profile != null) {
-      _name = widget.profile!.name;
-      _email = widget.profile!.email;
-      _password = widget.profile!.password;
-      _confirm_password = widget.profile!.confirm_password;
-      _account = widget.profile!.account;
-    }
+    loadSurveyFromJson(); // 설문 파일을 불러오는 메서드 호출
+  }
+
+  void loadSurveyFromJson() async {
+    // 설문 파일을 읽어오는 비동기 메서드
+    String jsonString = await File('survey.json').readAsString();
+    Map<String, dynamic> json = jsonDecode(jsonString);
+    Survey survey = Survey.fromJson(json);
+    setState(() {
+      questions = survey.questions;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight + 10), // AppBar의 높이 조정
-        child: AppBar(
-          title: Text(widget.profile == null ? "회원가입" : "회원정보 수정",
-            style: TextStyle(color: Colors.white),),
-          backgroundColor: const Color(0xFF48B5BB),
-        ),
+      appBar: AppBar(
+        title: Text('Survey Execution Page'),
       ),
-      backgroundColor: const Color(0xFFD9EEF1),
       body: Padding(
-        padding: const EdgeInsets.all(10), // 입력란 간격 조정
-        child: Form(
-          key: _formkey,
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                initialValue: _name,
-                decoration: const InputDecoration(labelText: "사용자 이름"),
-                onSaved: (value) => _name = value,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "내용을 입력하세요";
-                  }
-                  return null;
-                },
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Survey Title',
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
               ),
-              SizedBox(height: 50), // 간격 추가
-              TextFormField(
-                initialValue: _email,
-                decoration: const InputDecoration(labelText: "사용자 이메일"),
-                onSaved: (value) => _email = value,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "내용을 입력하세요";
-                  }
-                  // 정규 표현식 사용해서 이메일 형식검증,,
-                  String pattern =
-                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
-                  RegExp regex = RegExp(pattern);
-                  if (!regex.hasMatch(value)) {
-                    return '유효한 이메일 주소를 입력하세요';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 50), // 간격 추가
-              TextFormField(
-                initialValue: _password,
-                decoration: const InputDecoration(labelText: "사용자 비밀번호"),
-                obscureText: true,
-                onSaved: (value) => _password = value,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "내용을 입력하세요";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 50), // 간격 추가
-              TextFormField(
-                initialValue: _confirm_password,
-                decoration: InputDecoration(labelText: "비밀번호 재확인"),
-                obscureText: true,
-                onSaved: (value) => _confirm_password = value,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "내용을 입력하세요";
-                  }
-                  if (value != _password) {
-                    return "비밀번호가 일치하지 않습니다";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 50), // 간격 추가
-              TextFormField(
-                initialValue: _account,
-                decoration: const InputDecoration(labelText: "사용자 계좌정보"),
-                onSaved: (value) => _account = value,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "내용을 입력하세요";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 200), // 간격 추가
-              ElevatedButton(
-                onPressed: () {
-                  if (_formkey.currentState!.validate()) {
-                    _formkey.currentState!.save();
-
-                    final newProfile = Profile(
-                      name: _name!,
-                      email: _email!,
-                      password: _password!,
-                      confirm_password: _confirm_password!,
-                      account: _account!,
-                    );
-
-                    Navigator.pop(context, newProfile);
-                  }
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF48B5BB)),
-                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // 텍스트 색상 검정색으로 변경
-                  minimumSize: MaterialStateProperty.all(Size(75, 50)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+            ),
+            SizedBox(height: 16.0),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: questions.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Question ${index + 1}: ${questions[index].text}',
+                      style: TextStyle(
+                        fontSize: 18.0,
+                      ),
                     ),
-                  ),
-                ),
-                child: const Text("저장하기"),
-              ),
-
-
-            ],
-          ),
+                    if (questions[index].type == '객관식 답변')
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: questions[index].choices!.length,
+                        itemBuilder: (context, choiceIndex) {
+                          return RadioListTile(
+                            title: Text(questions[index].choices![choiceIndex]),
+                            value: questions[index].choices![choiceIndex],
+                            groupValue: null, // 선택된 값에 따라 변경
+                            onChanged: (value) {
+                              // 선택된 값에 따라 변경 로직 추가
+                            },
+                          );
+                        },
+                      )
+                    else
+                      TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Enter your answer',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    SizedBox(height: 16.0),
+                  ],
+                );
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Submit answers
+              },
+              child: Text('Submit'),
+            ),
+          ],
         ),
       ),
     );
