@@ -44,4 +44,9 @@ public class ResponseService {
     public void deleteResponse(Long id) {
         responseRepository.deleteById(id);
     }
+
+    public List<Response> getResponsesByUserIdAndQuestionId(Long userId, Long questionId) {
+        return responseRepository.findByUserIdAndQuestionId(userId, questionId);
+    }
+
 }

@@ -42,4 +42,8 @@ public class ChoiceService {
     public void deleteChoice(Long id) {
         choiceRepository.deleteById(id);
     }
+
+    public List<Choice> getChoicesByQuestionId(Long questionId) {
+        return choiceRepository.findByQuestionId(questionId);
+    }
 }

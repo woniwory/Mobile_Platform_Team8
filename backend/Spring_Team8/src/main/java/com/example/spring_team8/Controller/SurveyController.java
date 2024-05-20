@@ -1,6 +1,10 @@
 package com.example.spring_team8.Controller;
 
+import com.example.spring_team8.Entity.Choice;
+import com.example.spring_team8.Entity.Question;
 import com.example.spring_team8.Entity.Survey;
+import com.example.spring_team8.Service.ChoiceService;
+import com.example.spring_team8.Service.QuestionService;
 import com.example.spring_team8.Service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +23,12 @@ public class SurveyController {
 
     @Autowired
     private SurveyService surveyService;
+
+    @Autowired
+    private ChoiceService choiceService;
+
+    @Autowired
+    private QuestionService questionService;
 
     @GetMapping
     public ResponseEntity<List<Survey>> getAllSurveys() {
@@ -50,4 +60,12 @@ public class SurveyController {
         surveyService.deleteSurvey(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/{surveyId}/questions")
+    public List<Question> getQuestionsAndChoicesBySurveyId(@PathVariable Long surveyId) {
+        List<Question> questions = questionService.getQuestionsBySurveyId(surveyId);
+        return questions;
+    }
+
+
 }

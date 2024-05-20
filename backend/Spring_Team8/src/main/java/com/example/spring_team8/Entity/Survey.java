@@ -25,6 +25,12 @@ public class Survey {
 
     private Date surveyEndDate;
 
+    private Long participants;
+
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
+
 
 
 }

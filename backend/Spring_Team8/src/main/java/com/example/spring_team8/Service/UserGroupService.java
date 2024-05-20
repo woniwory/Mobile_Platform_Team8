@@ -44,25 +44,15 @@ public class UserGroupService {
         userGroupRepository.deleteById(id);
     }
 
-    public int getSurveyCountByGroupId(Long groupId) {
-        List<UserGroup> userGroups = userGroupRepository.findByGroup_Id(groupId);
-        int totalSurveyCount = 0;
-        for (UserGroup userGroup : userGroups) {
-            if (userGroup.getSurvey() != null) { // UserGroup이 설문을 참조하고 있는지 확인
-                totalSurveyCount++;
-            }
-        }
-        return totalSurveyCount;
-    }
 
 
-
-    public int getGroupCountByGroupId(Long groupId) {
-        List<UserGroup> userGroups = userGroupRepository.findByGroup_Id(groupId);
-        return userGroups.size(); // 해당 그룹에 속한 모든 유저그룹 엔티티의 개수를 반환
-    }
-
-    public List<String> getSurveyTitlesByGroupId(Long groupId) {
-        return userGroupRepository.findSurveyTitlesByGroupId(groupId);
-    }
+//
+//    public int getGroupCountByGroupId(Long groupId) {
+//        List<UserGroup> userGroups = userGroupRepository.findByGroup_Id(groupId);
+//        return userGroups.size(); // 해당 그룹에 속한 모든 유저그룹 엔티티의 개수를 반환
+//    }
+//
+//    public List<String> getSurveyTitlesByGroupId(Long groupId) {
+//        return userGroupRepository.findSurveyTitlesByGroupId(groupId);
+//    }
 }
