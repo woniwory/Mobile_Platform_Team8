@@ -1,9 +1,6 @@
 import "package:flutter/material.dart";
 import "create_user1.dart";
 
-
-
-
 class ProfileEditScreen extends StatefulWidget{
   final Profile? profile; // /? : Profile가 null이 될 수도 있다
 
@@ -87,19 +84,24 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
                 initialValue: _password,
                 decoration: const InputDecoration(labelText: "사용자 비밀번호"),
                 obscureText: true,
+                onChanged: (value) => _password = value, // 비밀번호 변경 시 업데이트
                 onSaved: (value) => _password = value,
                 validator: (value) {
                   if (value!.isEmpty) {
                     return "내용을 입력하세요";
                   }
+                  if (value.length < 8) {
+                    return "비밀번호는 최소 8자리여야 합니다";
+                  }
                   return null;
                 },
               ),
-              SizedBox(height: 15), // 간격 추가
+              SizedBox(height: 15),
               TextFormField(
                 initialValue: _confirm_password,
                 decoration: InputDecoration(labelText: "비밀번호 재확인"),
                 obscureText: true,
+                onChanged: (value) => _confirm_password = value, // 비밀번호 확인 변경 시 업데이트
                 onSaved: (value) => _confirm_password = value,
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -152,8 +154,6 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
                 ),
                 child: const Text("저장하기"),
               ),
-
-
             ],
           ),
         ),

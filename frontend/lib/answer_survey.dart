@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_team8/app_main.dart';
 
 void main() {
   runApp(SurveyPage());
@@ -85,6 +86,7 @@ class _SurveyBodyState extends State<SurveyBody> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MyApp()));
                 // 여기에 제출 로직 추가
               },
               child: Container(

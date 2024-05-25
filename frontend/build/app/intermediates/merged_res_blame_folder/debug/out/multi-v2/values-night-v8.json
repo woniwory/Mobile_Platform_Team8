@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.project_team8.app-mergeDebugResources-14:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.example.project_team8.app-mergeDebugResources-15:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\woniw\\.gradle\\caches\\transforms-3\\3cf4204e99f9901407d6beabb4312689\\transformed\\appcompat-1.0.2\\res\\values-night-v8\\values-night-v8.xml",
+                    "source": "C:\\Users\\hoyeong\\.gradle\\caches\\transforms-3\\3cf4204e99f9901407d6beabb4312689\\transformed\\appcompat-1.0.2\\res\\values-night-v8\\values-night-v8.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8",
                         "startColumns": "4,4,4,4,4,4,4",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\src\\Mobile_Platform_Team8\\android\\app\\src\\main\\res\\values-night\\styles.xml",
+                    "source": "C:\\Users\\hoyeong\\StudioProjects\\Mobile_Platform_Team8\\frontend\\android\\app\\src\\main\\res\\values-night\\styles.xml",
                     "from": {
                         "startLines": "3,14",
                         "startColumns": "4,4",

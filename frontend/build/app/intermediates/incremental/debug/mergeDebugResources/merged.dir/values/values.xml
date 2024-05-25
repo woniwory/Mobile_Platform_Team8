@@ -166,6 +166,8 @@
     <color name="browser_actions_title_color">#646464</color>
     <color name="button_material_dark">#ff5a595b</color>
     <color name="button_material_light">#ffd6d7d7</color>
+    <color name="call_notification_answer_color">#1d873b</color>
+    <color name="call_notification_decline_color">#d93025</color>
     <color name="dim_foreground_disabled_material_dark">#80bebebe</color>
     <color name="dim_foreground_disabled_material_light">#80323232</color>
     <color name="dim_foreground_material_dark">#ffbebebe</color>
@@ -389,6 +391,7 @@
     <item name="text2" type="id"/>
     <item name="title" type="id"/>
     <item name="up" type="id"/>
+    <id name="view_tree_lifecycle_owner"/>
     <integer name="abc_config_activityDefaultDur">220</integer>
     <integer name="abc_config_activityShortDur">150</integer>
     <integer name="cancel_button_image_alpha">127</integer>
@@ -433,6 +436,17 @@
     <string name="abc_shareactionprovider_share_with">Share with</string>
     <string name="abc_shareactionprovider_share_with_application">Share with <ns1:g example="Mail" id="application_name">%s</ns1:g></string>
     <string name="abc_toolbar_collapse_description">Collapse</string>
+    <string name="call_notification_answer_action">Answer</string>
+    <string name="call_notification_answer_video_action">Video</string>
+    <string name="call_notification_decline_action">Decline</string>
+    <string name="call_notification_hang_up_action">Hang Up</string>
+    <string name="call_notification_incoming_text">Incoming call</string>
+    <string name="call_notification_ongoing_text">Ongoing call</string>
+    <string name="call_notification_screening_text">Screening an incoming call</string>
+    <string name="copy_toast_msg">Link copied to clipboard</string>
+    <string name="fallback_menu_item_copy_link">Copy link</string>
+    <string name="fallback_menu_item_open_in_browser">Open in browser</string>
+    <string name="fallback_menu_item_share_link">Share link</string>
     <string name="search_menu_title">Search</string>
     <string name="status_bar_notification_info_overflow">999+</string>
     <style name="AlertDialog.AppCompat" parent="Base.AlertDialog.AppCompat"/>
@@ -2526,6 +2540,9 @@
         
         <attr format="float" name="alpha"/>
         <attr name="android:alpha"/>
+        
+        <attr format="float" name="lStar"/>
+        <attr name="android:lStar"/>
     </declare-styleable>
     <declare-styleable name="CompoundButton">
         <attr name="android:button"/>

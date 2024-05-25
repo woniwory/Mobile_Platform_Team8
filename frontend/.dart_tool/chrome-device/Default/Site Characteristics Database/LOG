@@ -1,8 +1,2 @@
-2024/05/18-01:45:03.261 2748 Reusing MANIFEST C:\Users\woniw\AppData\Local\Temp\flutter_tools.7480a80b\flutter_tools_chrome_device.eb62703e\Default\Site Characteristics Database/MANIFEST-000001
-2024/05/18-01:45:03.266 2748 Recovering log #3
-2024/05/18-01:45:03.266 2748 Level-0 table #3: started
-2024/05/18-01:45:03.269 2748 Level-0 table #3: 130 bytes OK
-2024/05/18-01:45:03.269 2748 Recovering log #6
-2024/05/18-01:45:03.269 2748 Reusing old log C:\Users\woniw\AppData\Local\Temp\flutter_tools.7480a80b\flutter_tools_chrome_device.eb62703e\Default\Site Characteristics Database/000006.log 
-2024/05/18-01:45:03.273 2748 Delete type=0 #3
-2024/05/18-01:45:03.273 2748 Delete type=2 #4
+2024/05/25-15:20:18.165 41e4 Reusing MANIFEST C:\Users\hoyeong\AppData\Local\Temp\flutter_tools.b3effb9b\flutter_tools_chrome_device.b144c30c\Default\Site Characteristics Database/MANIFEST-000001
+2024/05/25-15:20:18.170 1898 Moved #8 to level-1 190 bytes OK: files[ 3 1 0 0 0 0 0 ]

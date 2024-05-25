@@ -18,6 +18,12 @@
 @import shared_preferences_foundation;
 #endif
 
+#if __has_include(<url_launcher_ios/URLLauncherPlugin.h>)
+#import <url_launcher_ios/URLLauncherPlugin.h>
+#else
+@import url_launcher_ios;
+#endif
+
 #if __has_include(<webview_flutter_wkwebview/FLTWebViewFlutterPlugin.h>)
 #import <webview_flutter_wkwebview/FLTWebViewFlutterPlugin.h>
 #else
@@ -29,6 +35,7 @@
 + (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {
   [KakaoFlutterSdkPlugin registerWithRegistrar:[registry registrarForPlugin:@"KakaoFlutterSdkPlugin"]];
   [SharedPreferencesPlugin registerWithRegistrar:[registry registrarForPlugin:@"SharedPreferencesPlugin"]];
+  [URLLauncherPlugin registerWithRegistrar:[registry registrarForPlugin:@"URLLauncherPlugin"]];
   [FLTWebViewFlutterPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTWebViewFlutterPlugin"]];
 }
 

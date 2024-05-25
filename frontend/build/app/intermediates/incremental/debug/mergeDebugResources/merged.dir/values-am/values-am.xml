@@ -27,6 +27,17 @@
     <string msgid="3421042268587513524" name="abc_shareactionprovider_share_with">"ከሚከተለው ጋር ያጋሩ"</string>
     <string msgid="3300176832234831527" name="abc_shareactionprovider_share_with_application">"ከ<ns1:g id="APPLICATION_NAME">%s</ns1:g> ጋር አጋራ"</string>
     <string msgid="1603543279005712093" name="abc_toolbar_collapse_description">"ሰብስብ"</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"መልስ"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"ቪዲዮ"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"አትቀበል"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"ስልኩን ዝጋ"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"ገቢ ጥሪ"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"እየተካሄደ ያለ ጥሪ"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"ገቢ ጥሪ ማጣራት"</string>
+    <string msgid="3260749812566568062" name="copy_toast_msg">"አገናኝ ወደ ቅንጥብ ሰሌዳ ተቀድቷል"</string>
+    <string msgid="4566929209979330987" name="fallback_menu_item_copy_link">"አገናኝ ቅዳ"</string>
+    <string msgid="3413186855122069269" name="fallback_menu_item_open_in_browser">"በአሳሽ ውስጥ ክፈት"</string>
+    <string msgid="7145444925855055364" name="fallback_menu_item_share_link">"አገናኝ አጋራ"</string>
     <string msgid="146198913615257606" name="search_menu_title">"ፈልግ"</string>
     <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
 </resources>

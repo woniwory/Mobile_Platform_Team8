@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.project_team8.app-mergeDebugResources-14:/values-v25/values-v25.xml",
+            "outputFile": "com.example.project_team8.app-mergeDebugResources-15:/values-v25/values-v25.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\woniw\\.gradle\\caches\\transforms-3\\3cf4204e99f9901407d6beabb4312689\\transformed\\appcompat-1.0.2\\res\\values-v25\\values-v25.xml",
+                    "source": "C:\\Users\\hoyeong\\.gradle\\caches\\transforms-3\\3cf4204e99f9901407d6beabb4312689\\transformed\\appcompat-1.0.2\\res\\values-v25\\values-v25.xml",
                     "from": {
                         "startLines": "2,3,4,6",
                         "startColumns": "4,4,4,4",

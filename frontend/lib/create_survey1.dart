@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_team8/app_main.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -14,6 +15,10 @@ class SurveyApp extends StatelessWidget {
         create: (context) => SurveyProvider(),
         child: SurveyPage(),
       ),
+      routes: {
+        '/app': (context) => MyApp(), // '/app' 경로에 대한 위젯 설정
+
+      },
     );
   }
 }
@@ -353,7 +358,9 @@ class SurveyPage extends StatelessWidget {
                 SizedBox(height: 12.0), // 변경: 위젯 간격 줄임
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pushReplacementNamed('/app');
+                    },
                     child: Text(
                       '설문 만들기 완료',
                       style: TextStyle(color: Colors.white),

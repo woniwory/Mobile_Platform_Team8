@@ -3,11 +3,11 @@ import 'create_user2.dart';
 
 
 void main(){
-  runApp(const MyApp());
+  runApp(const CreateUserApp());
 }
 
-class MyApp extends StatelessWidget{
-  const MyApp({Key? key});
+class CreateUserApp extends StatelessWidget{
+  const CreateUserApp({Key? key});
 
 
   @override

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher_string.dart';
+import 'dart:convert';
 
 void main() {
   runApp(PaymentStatusPage());
@@ -94,12 +96,34 @@ class PaymentStatusBody extends StatelessWidget {
   }
 }
 
-class PaymentItem extends StatelessWidget {
+class PaymentItem extends StatefulWidget {
   final String name;
   final int currentAmount;
   final bool paid;
 
   PaymentItem({required this.name, required this.currentAmount, required this.paid});
+
+  @override
+  _PaymentItemState createState() => _PaymentItemState();
+}
+
+class _PaymentItemState extends State<PaymentItem> {
+  bool _isSentSuccessful = false;
+
+  void _showJsonOutput() {
+    setState(() {
+      _isSentSuccessful = true;
+    });
+
+    final jsonData = {
+      'name': widget.name,
+      'currentAmount': widget.currentAmount,
+      'paid': widget.paid,
+    };
+
+    final jsonString = jsonEncode(jsonData);
+    print('JSON Output: $jsonString');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,12 +139,12 @@ class PaymentItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "이름: $name",
+            "이름: ${widget.name}",
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
           Text(
-            "현재 납부 금액: ${currentAmount.toString()}원",
+            "현재 납부 금액: ${widget.currentAmount.toString()}원",
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 8),
@@ -131,10 +155,26 @@ class PaymentItem extends StatelessWidget {
                 style: TextStyle(fontSize: 16),
               ),
               Icon(
-                paid ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                color: paid ? Colors.green : Colors.red,
+                widget.paid ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                color: widget.paid ? Colors.green : Colors.red,
               ),
             ],
+          ),
+          const SizedBox(height: 20), // 버튼과 송금하기 버튼 사이의 간격 조절
+          ElevatedButton(
+            onPressed: _isSentSuccessful ? null : () {
+              launchUrlString('https://link.kakaopay.com/_/I8915sY'); // 카카오페이 송금 링크로 이동
+              _showJsonOutput(); // 송금 완료 후 JSON 출력
+            },
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(
+                const Color(0xff0165E1),
+              ),
+            ),
+            child: Text(
+              _isSentSuccessful ? '송금 완료' : '송금하기',
+              style: TextStyle(color: Colors.black),
+            ),
           ),
         ],
       ),
