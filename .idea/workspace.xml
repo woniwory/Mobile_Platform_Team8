@@ -5,70 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff7d2fa7-9d85-4049-b2be-e06321d4429d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/frontend/.dart_tool/chrome-device/Default/DIPS" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.dart_tool/chrome-device/Default/DIPS" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/.dart_tool/chrome-device/Default/Extension Scripts/CURRENT" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.dart_tool/chrome-device/Default/Extension Scripts/CURRENT" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/.flutter-plugins-dependencies" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.flutter-plugins-dependencies" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/ChoiceController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/GroupController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/QuestionController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/ResponseController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/SurveyController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/UserController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/UserGroupController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/UserSurveyController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Entity/Choice.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Entity/Group.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Entity/Question.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Entity/Response.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Entity/Survey.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Entity/User.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Entity/UserGroup.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Entity/UserSurvey.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Repository/ChoiceRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Repository/GroupRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Repository/QuestionRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Repository/ResponseRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Repository/SurveyRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Repository/UserGroupRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Repository/UserRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Repository/UserSurveyRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Service/ChoiceService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Service/GroupService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Service/QuestionService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Service/ResponseService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Service/SurveyService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Service/UserGroupService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Service/UserService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/Service/UserSurveyService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/java/com/example/spring_team8/SpringTeam8Application.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/main/resources/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Spring_Team8/src/test/java/com/example/spring_team8/SpringTeam8ApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/android/.gradle/7.6.3/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/android/.gradle/7.6.3/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/android/.gradle/7.6.3/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/android/.gradle/7.6.3/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/android/.gradle/7.6.3/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/android/.gradle/7.6.3/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/android/.gradle/7.6.3/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/android/.gradle/7.6.3/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/android/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/android/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/android/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/android/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/6e6b85fcb6a74d4044f5a4186ca56e0e.cache.dill.track.dill" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/6e6b85fcb6a74d4044f5a4186ca56e0e.cache.dill.track.dill" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/app/intermediates/assets/debug/flutter_assets/kernel_blob.bin" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/app/intermediates/assets/debug/flutter_assets/kernel_blob.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/app/intermediates/compressed_assets/debug/out/assets/flutter_assets/kernel_blob.bin.jar" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/app/intermediates/compressed_assets/debug/out/assets/flutter_assets/kernel_blob.bin.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/app/intermediates/flutter/debug/.last_build_id" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/app/intermediates/flutter/debug/.last_build_id" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/app/intermediates/flutter/debug/flutter_assets/kernel_blob.bin" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/app/intermediates/flutter/debug/flutter_assets/kernel_blob.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/app/intermediates/flutter/debug/flutter_build.d" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/app/intermediates/flutter/debug/flutter_build.d" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/app/intermediates/incremental/packageDebug/tmp/debug/dex-renamer-state.txt" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/app/intermediates/incremental/packageDebug/tmp/debug/dex-renamer-state.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/app/outputs/apk/debug/app-debug.apk" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/app/outputs/apk/debug/app-debug.apk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/app/outputs/flutter-apk/app-debug.apk" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/app/outputs/flutter-apk/app-debug.apk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/build/app/outputs/flutter-apk/app-debug.apk.sha1" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/build/app/outputs/flutter-apk/app-debug.apk.sha1" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/app_main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/app_main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/create_user1.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/create_user1.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/create_user2.dart" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/create_user2.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,7 +24,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/frontend" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -118,36 +56,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Flutter.answer_survey.dart.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.app_main.dart.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.create_survey1.dart.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.create_user1.dart.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.fee_result.dart.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.survey_result.dart.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.swipe_main.dart.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/src/Mobile_Platform_Team8&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;flutter.settings&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Flutter.answer_survey.dart.executor": "Run",
+    "Flutter.app_main.dart.executor": "Run",
+    "Flutter.create_survey1.dart.executor": "Run",
+    "Flutter.create_user1.dart.executor": "Run",
+    "Flutter.fee_result.dart.executor": "Run",
+    "Flutter.main.dart.executor": "Run",
+    "Flutter.survey_result.dart.executor": "Run",
+    "Flutter.swipe_main.dart.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "main",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/hoyeong/StudioProjects/Mobile_Platform_Team8/frontend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "flutter.settings",
+    "show.migrate.to.gradle.popup": "false",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\src\Mobile_Platform_Team8" />
