@@ -35,7 +35,7 @@ public class UserSurveyService {
     }
 
     public List<Survey> getSurveysByUserIdAndGroupId(Long userId, Long groupId) {
-        return userSurveyRepository.findByUserUserIdAndSurveyGroupId(userId, groupId)
+        return userSurveyRepository.findByUserUserIdAndSurveyGroupGroupId(userId, groupId)
                 .stream()
                 .map(UserSurvey::getSurvey)
                 .collect(Collectors.toList());

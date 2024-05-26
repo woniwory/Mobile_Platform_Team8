@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface UserSurveyRepository extends JpaRepository<UserSurvey, Long> {
 
-    List<UserSurvey> findByUserUserIdAndSurveyGroupId(Long userId, Long groupId);
+    List<UserSurvey> findByUserUserIdAndSurveyGroupGroupId(Long userId, Long groupId);
 
     UserSurvey findUserUserIdBySurveySurveyIdAndIsAdminTrue(Long surveyId);
 }

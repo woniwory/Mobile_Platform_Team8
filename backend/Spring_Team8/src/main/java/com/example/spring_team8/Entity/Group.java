@@ -14,7 +14,7 @@ public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "group_id") // Define the column name for the primary key
-    private Long id; // Change 'groupId' to 'id' to match the column name
+    private Long groupId; // Change 'groupId' to 'id' to match the column name
 
     private String groupName;
 
