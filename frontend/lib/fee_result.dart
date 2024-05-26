@@ -37,7 +37,7 @@ class PaymentStatusBody extends StatelessWidget {
 
     // 사용자 납부 현황 (DB에서 받아옴)
     List<Map<String, dynamic>> userPayments = [
-      {"name": "정성원", "currentAmount": 50000, "paid": true},
+      {"name": "정성원", "currentAmount": 50000, "paid": false},
       {"name": "이호영", "currentAmount": 30000, "paid": false},
       {"name": "박수현", "currentAmount": 120000, "paid": true},
     ];
