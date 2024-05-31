@@ -4,6 +4,8 @@ import com.example.spring_team8.Entity.Survey;
 import com.example.spring_team8.Entity.User;
 import com.example.spring_team8.Entity.UserSurvey;
 import com.example.spring_team8.Repository.UserRepository;
+import com.example.spring_team8.dto.UserDTO;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,14 +31,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(Long userId, User userDetails) {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()) {
-            User existingUser = user.get();
-            existingUser.setUserName(userDetails.getUserName());
-            existingUser.setUserEmail(userDetails.getUserEmail());
-            existingUser.setUserPassword(userDetails.getUserPassword());
-            existingUser.setUserAccountNumber(userDetails.getUserAccountNumber());
+    @Transactional
+    public User updateUser(Long userId, UserDTO userDto) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User existingUser = userOptional.get();
+            existingUser.setUserName(userDto.getUserName());
+            existingUser.setUserEmail(userDto.getUserEmail());
+            existingUser.setUserPassword(userDto.getUserPassword());
+            existingUser.setUserAccountNumber(userDto.getUserAccountNumber());
             return userRepository.save(existingUser);
         } else {
             return null;
@@ -54,4 +57,17 @@ public class UserService {
                 .map(UserSurvey::getSurvey)
                 .collect(Collectors.toList());
     }
+
+
+    public Optional<User> authenticateUser(String email, String password) {
+        Optional<User> userOptional = userRepository.findByUserEmail(email);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            if (password.equals(user.getUserPassword())) {
+                return Optional.of(user);
+            }
+        }
+        return Optional.empty();
+    }
+
 }

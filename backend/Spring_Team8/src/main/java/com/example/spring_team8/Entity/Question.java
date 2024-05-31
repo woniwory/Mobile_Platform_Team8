@@ -1,5 +1,7 @@
 package com.example.spring_team8.Entity;
 
+import com.example.spring_team8.dto.QuestionDTO;
+import com.example.spring_team8.dto.SurveyDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,9 +17,14 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long questionId;
 
-    private Long surveyId;
+    @ManyToOne
+    @JoinColumn(name = "survey_id")
+    private Survey survey;
 
     private boolean required;
 
     private String questionText;
+
+
+
 }

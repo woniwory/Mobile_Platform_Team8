@@ -1,6 +1,7 @@
 package com.example.spring_team8.Service;
 
 import com.example.spring_team8.Entity.UserGroup;
+import com.example.spring_team8.Entity.UserSurvey;
 import com.example.spring_team8.Repository.UserGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,11 @@ public class UserGroupService {
         return userGroupRepository.findById(id);
     }
 
+    public List<UserGroup> getUserGroupByUserId(Long userId) {
+        return userGroupRepository.findByUserUserId(userId);
+
+    }
+
     public UserGroup createUserGroup(UserGroup userGroup) {
         return userGroupRepository.save(userGroup);
     }
@@ -43,6 +49,7 @@ public class UserGroupService {
     public void deleteUserGroup(Long id) {
         userGroupRepository.deleteById(id);
     }
+
 
 
 

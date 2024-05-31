@@ -5,6 +5,7 @@ import lombok.Setter;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Getter
@@ -26,11 +27,6 @@ public class Survey {
     private Date surveyEndDate;
 
     private Long participants;
-
-    @ManyToOne
-    @JoinColumn(name = "group_id")
-    private Group group;
-
 
 
 }

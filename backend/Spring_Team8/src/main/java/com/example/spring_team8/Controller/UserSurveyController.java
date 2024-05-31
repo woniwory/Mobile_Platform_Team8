@@ -11,7 +11,7 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/user-surveys")
+@RequestMapping("api/user-surveys")
 public class UserSurveyController {
 
     @Autowired
@@ -23,9 +23,9 @@ public class UserSurveyController {
         return new ResponseEntity<>(userSurveys, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserSurvey> getUserSurveyById(@PathVariable("id") Long id) {
-        Optional<UserSurvey> userSurvey = userSurveyService.getUserSurveyById(id);
+    @GetMapping("/{surveyId}")
+    public ResponseEntity<UserSurvey> getUserSurveyById(@PathVariable("surveyId") Long surveyId) {
+        Optional<UserSurvey> userSurvey = userSurveyService.getUserSurveyBySurveyId(surveyId);
         if (userSurvey.isPresent()) {
             return new ResponseEntity<>(userSurvey.get(), HttpStatus.OK);
         } else {
@@ -52,10 +52,19 @@ public class UserSurveyController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/surveys/{userId}/{groupId}")
-    public List<Survey> getSurveysByUserIdAndGroupId(@PathVariable Long userId, @PathVariable Long groupId) {
-        return userSurveyService.getSurveysByUserIdAndGroupId(userId, groupId);
+    @PutMapping("/user/{userId}/survey/{surveyId}")
+    public ResponseEntity<UserSurvey> activateFeeStatus(@PathVariable Long userId, @PathVariable Long surveyId) {
+        Optional<UserSurvey> optionalUserSurvey = userSurveyService.getUserSurveyByUserIdAndSurveyId(userId, surveyId);
+        if (optionalUserSurvey.isPresent()) {
+            UserSurvey userSurvey = optionalUserSurvey.get();
+            userSurvey.setFeeStatus(true); // Set feeStatus to true
+            UserSurvey updatedUserSurvey = userSurveyService.updateFeeStatus(userSurvey);
+            return ResponseEntity.ok(updatedUserSurvey);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
+
 
 
 
