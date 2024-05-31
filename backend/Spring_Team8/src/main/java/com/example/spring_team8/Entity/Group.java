@@ -1,5 +1,6 @@
 package com.example.spring_team8.Entity;
 
+import com.example.spring_team8.dto.GroupDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,4 +20,13 @@ public class Group {
     private String groupName;
 
     // Constructors, getters, setters, toString, etc.
+
+
+    public GroupDTO toDto() {
+        GroupDTO groupDTO = new GroupDTO();
+        groupDTO.setGroupId(this.groupId);
+        groupDTO.setGroupName(this.groupName);
+        return groupDTO;
+    }
+
 }

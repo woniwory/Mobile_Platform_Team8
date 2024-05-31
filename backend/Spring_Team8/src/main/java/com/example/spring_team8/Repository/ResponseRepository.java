@@ -9,5 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface ResponseRepository extends JpaRepository<Response, Long> {
-    List<Response> findByUserIdAndQuestionId(Long userId, Long questionId);
+    List<Response> findByQuestionQuestionId(Long questionId);
+//    List<Response> findByUserIdAndQuestionId(Long userId, Long questionId);
 }

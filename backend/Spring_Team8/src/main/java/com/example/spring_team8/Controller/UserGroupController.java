@@ -1,6 +1,7 @@
 package com.example.spring_team8.Controller;
 
 import com.example.spring_team8.Entity.UserGroup;
+import com.example.spring_team8.Entity.UserSurvey;
 import com.example.spring_team8.Service.UserGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
-@RequestMapping("/userGroups")
+@RequestMapping("api/user-groups")
 public class UserGroupController {
 
     @Autowired
@@ -24,11 +25,11 @@ public class UserGroupController {
         return new ResponseEntity<>(userGroups, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserGroup> getUserGroupById(@PathVariable Long id) {
-        Optional<UserGroup> userGroup = userGroupService.getUserGroupById(id);
-        return userGroup.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @GetMapping("/user/{userId}")
+    public List<UserGroup> getUserGroupByUserId(@PathVariable("userId") Long userId) {
+        return userGroupService.getUserGroupByUserId(userId);
     }
+
 
     @PostMapping
     public ResponseEntity<UserGroup> createUserGroup(@RequestBody UserGroup userGroup) {

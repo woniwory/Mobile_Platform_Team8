@@ -29,6 +29,8 @@ public class UserSurvey {
 
     private boolean isAdmin;
 
+    private boolean feeStatus;
+
 
 
 }

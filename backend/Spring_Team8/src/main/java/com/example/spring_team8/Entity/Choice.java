@@ -1,5 +1,7 @@
 package com.example.spring_team8.Entity;
 
+
+import com.example.spring_team8.dto.ChoiceDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +17,13 @@ public class Choice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long choiceId;
 
-    private Long questionId;
+
+    @ManyToOne
+    @JoinColumn(name = "question_id")
+    private Question question;
 
     private String choiceText;
+
+
+
 }

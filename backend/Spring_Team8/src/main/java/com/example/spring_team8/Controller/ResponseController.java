@@ -1,21 +1,35 @@
 package com.example.spring_team8.Controller;
 
-import com.example.spring_team8.Entity.Response;
+import com.example.spring_team8.Entity.*;
+import com.example.spring_team8.Repository.ChoiceRepository;
+import com.example.spring_team8.Repository.QuestionRepository;
+import com.example.spring_team8.Repository.UserRepository;
+import com.example.spring_team8.Service.QuestionService;
 import com.example.spring_team8.Service.ResponseService;
+import com.example.spring_team8.dto.QuestionDTO;
+import com.example.spring_team8.dto.ResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/responses")
+@RequestMapping("api/responses")
 public class ResponseController {
 
     @Autowired
     private ResponseService responseService;
+
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private QuestionRepository questionRepository;
 
     @GetMapping
     public ResponseEntity<List<Response>> getAllResponses() {
@@ -30,16 +44,28 @@ public class ResponseController {
     }
 
     @PostMapping
-    public ResponseEntity<Response> createResponse(@RequestBody Response response) {
-        Response createdResponse = responseService.createResponse(response);
-        return new ResponseEntity<>(createdResponse, HttpStatus.CREATED);
+    public ResponseEntity<?> createResponses(@RequestBody List<ResponseDTO> responseDTOS) {
+        List<Response> responses = new ArrayList<>();
+        for (ResponseDTO dto : responseDTOS) {
+            Question question = questionRepository.findById(dto.getQuestionId())
+                    .orElseThrow(() -> new RuntimeException("Question not found with id: " + dto.getQuestionId()));
+
+            User user = userRepository.findById(dto.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found with id: " + dto.getUserId()));
+
+
+
+            Response response = new Response();
+            response.setQuestion(question);
+            response.setUser(user);
+            response.setResponseText(dto.getResponseText());
+            responses.add(response);
+        }
+        List<Response> createdResponses = responseService.createResponses(responses);
+        return new ResponseEntity<>(createdResponses, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Response> updateResponse(@PathVariable Long id, @RequestBody Response responseDetails) {
-        Response updatedResponse = responseService.updateResponse(id, responseDetails);
-        return updatedResponse != null ? new ResponseEntity<>(updatedResponse, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteResponse(@PathVariable Long id) {
@@ -48,9 +74,9 @@ public class ResponseController {
     }
 
 
-    @GetMapping("/user/{userId}/question/{questionId}")
-    public List<Response> getResponsesByUserIdAndQuestionId(@PathVariable Long userId, @PathVariable Long questionId) {
-        return responseService.getResponsesByUserIdAndQuestionId(userId, questionId);
+    @GetMapping("/question/{questionId}")
+    public List<Response> getResponsesByQuestionId(@PathVariable Long questionId) {
+        return responseService.getResponsesByQuestionId(questionId);
     }
 
 }

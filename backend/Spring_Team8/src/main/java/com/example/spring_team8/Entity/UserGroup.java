@@ -13,7 +13,7 @@ public class UserGroup {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userGroupId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -23,7 +23,7 @@ public class UserGroup {
     @JoinColumn(name = "group_id")
     private Group group;
 
-    @ManyToOne // Many user groups can be associated with one survey
+    @ManyToOne
     @JoinColumn(name = "survey_id")
     private Survey survey;
 

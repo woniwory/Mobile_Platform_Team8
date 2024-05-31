@@ -31,18 +31,18 @@ public class UserSurveyService {
 
     public Optional<UserSurvey> findByUserId(Long userId) { return userSurveyRepository.findById(userId); }
 
-    public Optional<UserSurvey> getUserSurveyById(Long id) { return userSurveyRepository.findById(id);
-    }
 
-    public List<Survey> getSurveysByUserIdAndGroupId(Long userId, Long groupId) {
-        return userSurveyRepository.findByUserUserIdAndSurveyGroupGroupId(userId, groupId)
-                .stream()
-                .map(UserSurvey::getSurvey)
-                .collect(Collectors.toList());
+    public UserSurvey updateFeeStatus(UserSurvey userSurvey) {
+        userSurvey.setFeeStatus(true);
+        return userSurveyRepository.save(userSurvey);
     }
 
 
+    public Optional<UserSurvey> getUserSurveyBySurveyId(Long surveyId) {
+        return userSurveyRepository.findById(surveyId);
+    }
 
-
-
+    public Optional<UserSurvey> getUserSurveyByUserIdAndSurveyId(Long userId, Long surveyId) {
+        return userSurveyRepository.findByUserUserIdAndSurveySurveyId(userId, surveyId);
+    }
 }
