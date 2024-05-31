@@ -1,58 +1,60 @@
-import "package:flutter/material.dart";
-import "create_user1.dart";
+import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'profile.dart';
 
-class ProfileEditScreen extends StatefulWidget{
-  final Profile? profile; // /? : Profile가 null이 될 수도 있다
+void main() {
+  runApp(CreateUser());
+}
 
-  const ProfileEditScreen({super.key, this.profile});
+class CreateUser extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Profile Edit Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: ProfileEditScreen(),
+    );
+  }
+}
+
+
+
+class ProfileEditScreen extends StatefulWidget {
+  final Profile? profile;
+
+  const ProfileEditScreen({Key? key, this.profile}) : super(key: key);
 
   @override
   ProfileEditScreenState createState() => ProfileEditScreenState();
-
 }
 
 class ProfileEditScreenState extends State<ProfileEditScreen> {
   final _formkey = GlobalKey<FormState>();
-  String? _name = '123'; // 사용자 데이터 입력 받는 부분
-  String? _email = '123@123.com'; // 사용자 데이터 입력 받는 부분
-  String? _password='123'; // 사용자 데이터 입력 받는 부분
-  String? _confirm_password='123'; // 사용자 데이터 입력 받는 부분
-  String? _account='123'; // 사용자 데이터 입력 받는 부분
-
-  // widget 생명 주기에서 가장 먼저 수행
-  void initState() {
-    super.initState();
-    if (widget.profile != null) {
-      _name = widget.profile!.name;
-      _email = widget.profile!.email;
-      _password = widget.profile!.password;
-      _confirm_password = widget.profile!.confirm_password;
-      _account = widget.profile!.account;
-    }
-  }
+  String? _userAccountNumber = '234234234';
+  String? _userEmail = 'psh911@naver.com';
+  String? _userName = '박수현';
+  String? _userPassword = '박수현Password';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight + 10), // AppBar의 높이 조정
-        child: AppBar(
-          title: Text(widget.profile == null ? "회원가입" : "회원정보 수정",
-            style: TextStyle(color: Colors.white),),
-          backgroundColor: const Color(0xFF48B5BB),
-        ),
+      appBar: AppBar(
+        title: Text(widget.profile == null ? "회원가입" : "회원정보 수정"),
       ),
-      backgroundColor: const Color(0xFFD9EEF1),
       body: Padding(
-        padding: const EdgeInsets.all(10), // 입력란 간격 조정
+        padding: const EdgeInsets.all(10),
         child: Form(
           key: _formkey,
           child: Column(
             children: <Widget>[
               TextFormField(
-                initialValue: _name,
-                decoration: const InputDecoration(labelText: "사용자 이름"),
-                onSaved: (value) => _name = value,
+                initialValue: _userAccountNumber,
+                decoration: const InputDecoration(labelText: "사용자 계좌번호"),
+                onSaved: (value) => _userAccountNumber = value,
                 validator: (value) {
                   if (value!.isEmpty) {
                     return "내용을 입력하세요";
@@ -60,18 +62,17 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 15), // 간격 추가
+              SizedBox(height: 15),
               TextFormField(
-                initialValue: _email,
+                initialValue: _userEmail,
                 decoration: const InputDecoration(labelText: "사용자 이메일"),
-                onSaved: (value) => _email = value,
+                onSaved: (value) => _userEmail = value,
                 validator: (value) {
                   if (value!.isEmpty) {
                     return "내용을 입력하세요";
                   }
-                  // 정규 표현식 사용해서 이메일 형식검증,,
-                  String pattern =
-                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
+                  // 정규 표현식 사용해서 이메일 형식검증
+                  String pattern = r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$';
                   RegExp regex = RegExp(pattern);
                   if (!regex.hasMatch(value)) {
                     return '유효한 이메일 주소를 입력하세요';
@@ -79,13 +80,25 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 15), // 간격 추가
+              SizedBox(height: 15),
               TextFormField(
-                initialValue: _password,
+                initialValue: _userName,
+                decoration: const InputDecoration(labelText: "사용자 이름"),
+                onSaved: (value) => _userName = value,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return "내용을 입력하세요";
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 15),
+              TextFormField(
+                initialValue: _userPassword,
                 decoration: const InputDecoration(labelText: "사용자 비밀번호"),
                 obscureText: true,
-                onChanged: (value) => _password = value, // 비밀번호 변경 시 업데이트
-                onSaved: (value) => _password = value,
+                onChanged: (value) => _userPassword = value,
+                onSaved: (value) => _userPassword = value,
                 validator: (value) {
                   if (value!.isEmpty) {
                     return "내용을 입력하세요";
@@ -97,61 +110,52 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
                 },
               ),
               SizedBox(height: 15),
-              TextFormField(
-                initialValue: _confirm_password,
-                decoration: InputDecoration(labelText: "비밀번호 재확인"),
-                obscureText: true,
-                onChanged: (value) => _confirm_password = value, // 비밀번호 확인 변경 시 업데이트
-                onSaved: (value) => _confirm_password = value,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "내용을 입력하세요";
-                  }
-                  if (value != _password) {
-                    return "비밀번호가 일치하지 않습니다";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 15), // 간격 추가
-              TextFormField(
-                initialValue: _account,
-                decoration: const InputDecoration(labelText: "사용자 계좌정보"),
-                onSaved: (value) => _account = value,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "내용을 입력하세요";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 30), // 간격 추가
               ElevatedButton(
                 onPressed: () {
                   if (_formkey.currentState!.validate()) {
                     _formkey.currentState!.save();
 
                     final newProfile = Profile(
-                      name: _name!,
-                      email: _email!,
-                      password: _password!,
-                      confirm_password: _confirm_password!,
-                      account: _account!,
+                      userAccountNumber: _userAccountNumber,
+                      userEmail: _userEmail,
+                      userName: _userName,
+                      userPassword: _userPassword,
                     );
 
-                    Navigator.pop(context, newProfile);
+                    // Profile 객체를 JSON으로 변환
+                    final jsonData = newProfile.toJson();
+                    // JSON 데이터를 문자열로 변환
+                    final requestBody = json.encode(jsonData);
+
+                    // 서버 주소
+                    String url = 'http://localhost:8080/api/users';
+
+                    // HTTP POST 요청 보내기
+                    http.post(
+                      Uri.parse(url),
+                      headers: <String, String>{
+                        'Content-Type': 'application/json; charset=UTF-8',
+                      },
+                      body: requestBody,
+                    ).then((response) {
+                      // 응답 확인
+                      if (response.statusCode == 201) {
+                        // 서버로부터 온 응답 데이터 출력
+                        print('Response: ${response.body}');
+                        // 성공 시 다음 화면으로 이동
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(builder: (context) => NextPage()),
+                        // );
+                      } else {
+                        // 에러 처리
+                        print('Failed with status code: ${response.statusCode}');
+                      }
+                    }).catchError((error) {
+                      print('Error: $error');
+                    });
                   }
                 },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF48B5BB)),
-                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // 텍스트 색상 검정색으로 변경
-                  minimumSize: MaterialStateProperty.all(Size(75, 50)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                ),
                 child: const Text("저장하기"),
               ),
             ],

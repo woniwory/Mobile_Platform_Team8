@@ -1,6 +1,6 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=C:\flutter
-FLUTTER_APPLICATION_PATH=C:\Users\hoyeong\StudioProjects\project_team8
+FLUTTER_ROOT=C:\flutter\flutter_windows_3.19.6-stable\flutter
+FLUTTER_APPLICATION_PATH=C:\src\Mobile_Platform_Team8\frontend
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_BUILD_DIR=build
 FLUTTER_BUILD_NAME=1.0.0

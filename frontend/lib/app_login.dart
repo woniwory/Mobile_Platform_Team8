@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:project_team8/app_main.dart';
-import 'package:project_team8/create_user1.dart';
+import 'package:project_team8/create_user2.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:project_team8/login_platform.dart';
 import 'package:url_strategy/url_strategy.dart';
+
+class Login {
+  final String? userEmail;
+  final String? userPassword;
+
+  Login({
+    this.userEmail,
+    this.userPassword,
+  });
+
+  // Login 객체를 JSON으로 변환하는 메서드
+  Map<String, dynamic> toJson() {
+    return {
+      "userEmail": userEmail,
+      "userPassword": userPassword,
+    };
+  }
+}
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +44,7 @@ class LoginApp extends StatelessWidget {
       home: LoginPage(),
       routes: {
         '/app': (context) => MyApp(), // '/app' 경로에 대한 위젯 설정
-        '/create': (context) => CreateUserApp(), // '/create' 경로에 대한 위젯 설정
+        '/create': (context) => CreateUser(), // '/create' 경로에 대한 위젯 설정
       },
     );
   }
@@ -38,6 +56,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   LoginPlatform _loginPlatform = LoginPlatform.none;
 
   void signInWithKakao() async {
@@ -86,6 +106,35 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  void _login() async {
+    final String email = _emailController.text;
+    final String password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      // 사용자에게 이메일과 비밀번호를 입력하라고 알림
+      print(1);
+      return;
+    }
+
+    Login login = Login(userEmail: email, userPassword: password);
+
+    final response = await http.post(
+      Uri.parse('http://localhost:8080/api/users/login'),
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+      body: jsonEncode(login.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      // 로그인 성공 시 MyApp으로 이동
+      Navigator.of(context).pushReplacementNamed('/app');
+    } else {
+      // 로그인 실패 시 오류 메시지 표시
+      print('로그인 실패: ${response.statusCode}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,14 +149,15 @@ class _LoginPageState extends State<LoginPage> {
                 width: 270,
                 height: 230,
                 child: Image.asset(
-                  'assets/your_image.jpg', // 이미지 경로에 따라 수정해주세요
+                  'assets/images/dku-logo.png', // 이미지 경로에 따라 수정해주세요
                   fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(height: 100.0),
+              SizedBox(height: 75.0),
               SizedBox(
                 width: 500,
                 child: TextFormField(
+                  controller: _emailController,
                   decoration: InputDecoration(
                     labelText: '사용자 아이디',
                     border: OutlineInputBorder(),
@@ -118,6 +168,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(
                 width: 500,
                 child: TextFormField(
+                  controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: '비밀번호',
@@ -130,9 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacementNamed('/app');
-                    },
+                    onPressed: _login, // 로그인 버튼 눌릴 때 _login 함수 호출
                     child: Text('로그인'),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF48B5BB)),
