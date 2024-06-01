@@ -37,6 +37,11 @@ public class UserSurveyService {
         return userSurveyRepository.save(userSurvey);
     }
 
+    public Optional<Boolean> getFeeStatus(Long userId, Long surveyId) {
+        Optional<UserSurvey> userSurvey = userSurveyRepository.findByUserUserIdAndSurveySurveyId(userId, surveyId);
+        return userSurvey.map(UserSurvey::isFeeStatus);
+    }
+
 
     public Optional<UserSurvey> getUserSurveyBySurveyId(Long surveyId) {
         return userSurveyRepository.findById(surveyId);

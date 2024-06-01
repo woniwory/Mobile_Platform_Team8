@@ -21,7 +21,6 @@ public class UserDTO {
         user.setUserName(userDto.getUserName());
         user.setUserEmail(userDto.getUserEmail());
         user.setUserPassword(userDto.getUserPassword());
-        user.setUserAccountNumber(userDto.getUserAccountNumber());
         return user;
     }
 

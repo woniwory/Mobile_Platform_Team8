@@ -20,7 +20,6 @@ public class User {
     private String userName;
     private String userEmail;
     private String userPassword;
-    private String userAccountNumber;
 
 
 
@@ -30,7 +29,6 @@ public class User {
         userDto.setUserName(user.getUserName());
         userDto.setUserEmail(user.getUserEmail());
         userDto.setUserPassword(user.getUserPassword());
-        userDto.setUserAccountNumber(user.getUserAccountNumber());
         return userDto;
     }
 

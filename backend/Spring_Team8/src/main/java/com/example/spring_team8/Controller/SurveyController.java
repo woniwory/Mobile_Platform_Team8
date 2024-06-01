@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import java.util.List;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/surveys")
 public class SurveyController {

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("api/user-surveys")
 public class UserSurveyController {
@@ -23,6 +24,13 @@ public class UserSurveyController {
         return new ResponseEntity<>(userSurveys, HttpStatus.OK);
     }
 
+    @GetMapping("fee-status/{userId}/{surveyId}")
+    public ResponseEntity<Boolean> getFeeStatus(@PathVariable Long userId, @PathVariable Long surveyId) {
+        Optional<Boolean> feeStatus = userSurveyService.getFeeStatus(userId, surveyId);
+        return new ResponseEntity<>(feeStatus.get(), HttpStatus.OK);
+    }
+
+
     @GetMapping("/{surveyId}")
     public ResponseEntity<UserSurvey> getUserSurveyById(@PathVariable("surveyId") Long surveyId) {
         Optional<UserSurvey> userSurvey = userSurveyService.getUserSurveyBySurveyId(surveyId);
@@ -32,6 +40,8 @@ public class UserSurveyController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+
     
     @PostMapping
     public ResponseEntity<UserSurvey> createUserSurvey(@RequestBody UserSurvey userSurvey) {

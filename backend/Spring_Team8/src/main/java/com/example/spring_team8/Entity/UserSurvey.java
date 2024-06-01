@@ -32,5 +32,4 @@ public class UserSurvey {
     private boolean feeStatus;
 
 
-
 }
