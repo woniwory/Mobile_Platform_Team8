@@ -4,6 +4,7 @@ import com.example.spring_team8.Entity.Choice;
 import com.example.spring_team8.Entity.Question;
 import com.example.spring_team8.Repository.ChoiceRepository;
 import com.example.spring_team8.Repository.QuestionRepository;
+import com.example.spring_team8.dto.ChoiceDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +30,26 @@ public class ChoiceService {
         return choiceRepository.findByQuestionQuestionId(id);
     }
 
-    public Choice createChoice(Choice choice) {
-        return choiceRepository.save(choice);
+    public Choice createChoice(ChoiceDTO choiceDTO) {
+        System.out.println("Creating choice for question ID: " + choiceDTO.getQuestionId());
+
+        Question question = questionRepository.findById(choiceDTO.getQuestionId())
+                .orElseThrow(() -> new RuntimeException("Question not found: " + choiceDTO.getQuestionId()));
+
+        Choice choice = new Choice();
+        choice.setQuestion(question);
+        choice.setChoiceText(choiceDTO.getChoiceText());
+
+        System.out.println("Saving choice: " + choice);
+
+        try {
+            Choice savedChoice = choiceRepository.save(choice);
+            System.out.println("Saved choice ID: " + savedChoice.getChoiceId());
+            return savedChoice;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to save choice: " + e.getMessage());
+        }
     }
 
 

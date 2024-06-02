@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("api/choices")
 public class ChoiceController {
@@ -40,22 +41,17 @@ public class ChoiceController {
 
 
     @PostMapping
-    public ResponseEntity<?> createChoices(@RequestBody List<ChoiceDTO> choiceDTOs) {
-        List<Choice> choices = new ArrayList<>();
-        for (ChoiceDTO dto : choiceDTOs) {
-            if (dto.getQuestionId() == null) {
-                return new ResponseEntity<>("Question ID must not be null", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<List<Choice>> createChoices(@RequestBody List<ChoiceDTO> choiceDTOs) {
+        List<Choice> createdChoices = new ArrayList<>();
+        for (ChoiceDTO choiceDTO : choiceDTOs) {
+            try {
+                Choice createdChoice = choiceService.createChoice(choiceDTO);
+                createdChoices.add(createdChoice);
+                System.out.println("Created choice: " + createdChoice);
+            } catch (RuntimeException e) {
+                System.err.println("Error creating choice: " + e.getMessage());
             }
-
-            Question question = questionRepository.findById(dto.getQuestionId())
-                    .orElseThrow(() -> new RuntimeException("Question not found with id: " + dto.getQuestionId()));
-
-            Choice choice = new Choice();
-            choice.setQuestion(question);
-            choice.setChoiceText(dto.getChoiceText());
-            choices.add(choice);
         }
-        List<Choice> createdChoices = choiceService.createChoices(choices);
         return new ResponseEntity<>(createdChoices, HttpStatus.CREATED);
     }
 

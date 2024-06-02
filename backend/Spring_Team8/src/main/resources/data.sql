@@ -28,10 +28,10 @@ INSERT INTO user_survey (user_id, survey_id,is_admin,fee_status) VALUES (1,3,tru
 
 
 
-INSERT INTO question (survey_id, question_text,required) VALUES (1,'어떤 프로그래밍 언어를 사용하나요?',true);
-INSERT INTO question (survey_id, question_text,required) VALUES (1,'왜 사용하나요?',true);
-INSERT INTO question (survey_id, question_text,required) VALUES (2,'밥 몇시에 먹었나요?',true);
-INSERT INTO question (survey_id, question_text,required) VALUES (2,'뭘 먹었나요?',true);
+INSERT INTO question (survey_id, question_text,required,type) VALUES (1,'어떤 프로그래밍 언어를 사용하나요?',true,false);
+INSERT INTO question (survey_id, question_text,required,type) VALUES (1,'왜 사용하나요?',true,false);
+INSERT INTO question (survey_id, question_text,required,type) VALUES (2,'밥 몇시에 먹었나요?',true,false);
+INSERT INTO question (survey_id, question_text,required,type) VALUES (2,'뭘 먹었나요?',true,false);
 
 
 INSERT INTO choice (question_id, choice_text) VALUES (1,'파이썬');
