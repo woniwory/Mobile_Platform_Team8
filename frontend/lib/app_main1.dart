@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:convert'; // for json decoding
+import 'package:http/http.dart' as http;
+import 'package:project_team8/create_survey1.dart'; // for making http requests
 
 void main() {
   runApp(MyApp());
@@ -15,6 +18,9 @@ class MyApp extends StatelessWidget {
           backgroundColor: Color(0xFF48B5BB),
         ),
       ),
+      routes: {
+        '/create_survey': (context) => SurveyApp(),
+      },
     );
   }
 }
@@ -26,17 +32,41 @@ class SwipeDemo extends StatefulWidget {
 
 class _SwipeDemoState extends State<SwipeDemo> {
   late PageController _controller;
-
-  final List<List<String>> _containerCounts = [
-    ['설문 제목 1', '설문 제목 2', '설문 제목 3'],
-    ['설문 제목 1', '설문 제목 2', '설문 제목 3', '설문 제목 4', '설문 제목 5', '설문 제목 6', '설문 제목 7', '설문 제목 8'],
-    ['설문 제목 1', '설문 제목 2', '설문 제목 3', '설문 제목 4'],
-  ];
+  List<List<String>> _containerCounts = [];
+  bool _isLoading = true;
+  String? _error;
 
   @override
   void initState() {
     super.initState();
     _controller = PageController(initialPage: 0);
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final url = 'http://localhost:8080/api/user-groups/user/1';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          _containerCounts = data.map((item) => item['survey']['surveyTitle'] as String).toList().map((title) => [title]).toList();
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _error = '데이터를 불러오는데 실패했습니다: 상태 코드 ${response.statusCode}';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _error = '데이터를 불러오는데 오류가 발생했습니다: $e';
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -51,7 +81,11 @@ class _SwipeDemoState extends State<SwipeDemo> {
       appBar: AppBar(
         title: Text('메인'),
       ),
-      body: Padding(
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _error != null
+          ? Center(child: Text(_error!))
+          : Padding(
         padding: EdgeInsets.only(top: 70),
         child: GestureDetector(
           onHorizontalDragUpdate: (details) {
@@ -93,7 +127,7 @@ class _SwipeDemoState extends State<SwipeDemo> {
                           IconButton(
                             icon: Icon(Icons.add),
                             onPressed: () {
-                              print('모임 ${pageIndex + 1}에 아이템 추가');
+                              Navigator.pushNamed(context, '/create_survey');
                             },
                           ),
                         ],

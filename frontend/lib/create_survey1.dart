@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:project_team8/app_main.dart';
 import 'package:provider/provider.dart';
 
@@ -16,26 +18,23 @@ class SurveyApp extends StatelessWidget {
         child: SurveyPage(),
       ),
       routes: {
-        '/app': (context) => MyApp(), // '/app' 경로에 대한 위젯 설정
-
+        '/app': (context) => MyApp(),
       },
     );
   }
 }
-
 class SurveyProvider extends ChangeNotifier {
   TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
   TextEditingController questionController = TextEditingController();
   TextEditingController choiceController = TextEditingController();
   List<Question> questions = [];
   List<TextEditingController> choiceControllers = [];
-  String questionType = '서술형 답변';
-  String selectedChoice = 'Add Choice';
-  bool showChoicesDropdown = false;
-  bool isRequired = false; // 질문 필수 여부
+  bool questionType = false;
+  bool isRequired = false;
 
-  void addQuestion() {
-    if (questionType == '객관식 답변') {
+  Future<void> addQuestion() async {
+    if (questionType) {
       List<String> choices = [];
       for (var controller in choiceControllers) {
         choices.add(controller.text);
@@ -46,28 +45,27 @@ class SurveyProvider extends ChangeNotifier {
           type: questionType,
           choices: choices,
           isRequired: isRequired,
+          questionId: null,
         ),
       );
       choiceControllers.clear();
-      selectedChoice = 'Add Choice';
-      showChoicesDropdown = false;
     } else {
       questions.add(
         Question(
           text: questionController.text,
           type: questionType,
           isRequired: isRequired,
+          questionId: null,
         ),
       );
     }
     questionController.clear();
-    isRequired = false; // 질문 추가 후 필수 여부 초기화
+    isRequired = false;
     notifyListeners();
   }
 
   void addChoiceController(BuildContext context) {
     choiceControllers.add(TextEditingController());
-    showChoicesDropdown = true;
     notifyListeners();
   }
 
@@ -77,42 +75,30 @@ class SurveyProvider extends ChangeNotifier {
   }
 
   void editQuestion(int index) {
-    // 선택한 질문의 정보 가져오기
     Question selectedQuestion = questions[index];
     questionController.text = selectedQuestion.text;
     questionType = selectedQuestion.type;
-    isRequired = selectedQuestion.isRequired; // 수정: 선택한 질문의 필수 여부 가져오기
-
-    // 질문의 타입이 객관식 답변인 경우
-    if (questionType == '객관식 답변') {
-      // 기존의 선택한 질문의 선택지를 가져와서 choiceControllers에 추가
-      choiceControllers.clear(); // 선택한 질문을 수정할 때마다 choiceControllers를 비워줌
+    isRequired = selectedQuestion.isRequired;
+    if (questionType) {
+      choiceControllers.clear();
       selectedQuestion.choices?.forEach((choice) {
         TextEditingController controller = TextEditingController(text: choice);
         choiceControllers.add(controller);
       });
     } else {
-      // 객관식 답변가 아닌 경우에는 choiceControllers를 비움
       choiceControllers.clear();
     }
-
-    // 변경 사항 알리기
     notifyListeners();
   }
 
   void saveEditedQuestion(int index) {
-    // 선택한 질문의 정보 가져오기
     Question selectedQuestion = questions[index];
-    // 선택한 질문의 수정된 내용 저장
     selectedQuestion.text = questionController.text;
-    selectedQuestion.type = questionType;
-    selectedQuestion.isRequired = isRequired; // 수정: 필수 여부 저장
-
-    // 선택한 질문이 객관식 답변일 경우, 선택지도 업데이트
-    if (questionType == '객관식 답변') {
+    selectedQuestion.type = questionType; // Ensure this line updates the questionType
+    selectedQuestion.isRequired = isRequired;
+    if (questionType) {
       selectedQuestion.choices = choiceControllers.map((controller) => controller.text).toList();
     }
-    // 변경 사항 알리기
     notifyListeners();
   }
 
@@ -121,60 +107,179 @@ class SurveyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeQuestionType(String newValue) {
+  void changeQuestionType(bool newValue) {
     questionType = newValue;
+    print("Question type changed to: $questionType");
     notifyListeners();
   }
 
-  List<DropdownMenuItem<String>> buildDropdownMenuItems() {
-    return questionTypes.map((type) {
-      return DropdownMenuItem<String>(
-        value: type,
-        child: Text(
-          type,
-        ),
-      );
-    }).toList();
+  List<DropdownMenuItem<bool>> buildDropdownMenuItems() {
+    return [
+      DropdownMenuItem<bool>(
+        value: false,
+        child: Text('서술형 답변'),
+      ),
+      DropdownMenuItem<bool>(
+        value: true,
+        child: Text('객관식 답변'),
+      ),
+    ];
   }
 
   Widget buildChoiceFields(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints(maxHeight: 150), // 최대 높이를 150으로 설정
-      child: ListView.builder(
-        shrinkWrap: true,
-        physics: ClampingScrollPhysics(), // 변경: 스크롤 가능하도록 설정
-        itemCount: choiceControllers.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2.0), // 변경: 세로 패딩 줄임
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (int i = 0; i < choiceControllers.length; i++)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
-                    controller: choiceControllers[index],
+                    controller: choiceControllers[i],
                     decoration: InputDecoration(
-                      labelText: ' 문항 ${index + 1}',
+                      labelText: 'Choice ${i + 1}',
                       border: OutlineInputBorder(),
-                      hintText: ' 문항${index + 1}을 입력하세요 ',
-                      contentPadding: EdgeInsets.symmetric(vertical: 4.0), // Adjusting content padding
                     ),
-                    style: TextStyle(fontSize: 16.0), // 변경: 폰트 크기 작게 조정
-                    maxLines: 1,
                   ),
                 ),
-                SizedBox(width: 8.0),
+                SizedBox(width: 8),
                 IconButton(
                   icon: Icon(Icons.remove),
                   onPressed: () {
-                    deleteChoiceController(index);
+                    deleteChoiceController(i);
                   },
                 ),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        SizedBox(height: 8),
+        TextButton(
+          onPressed: () {
+            addChoiceController(context);
+          },
+          child: Text('Add Choice'),
+        ),
+      ],
     );
+  }
+
+  void finishSurvey(BuildContext context) async {
+    // Convert questions to JSON
+    List<Map<String, dynamic>> questionsJsonList = [];
+    for (var question in questions) {
+      questionsJsonList.add({
+        'questionText': question.text,
+        'type': question.type,
+        'choices': question.choices,
+        'isRequired': question.isRequired,
+      });
+    }
+
+    // Get current date for start and end dates
+    final now = DateTime.now();
+    final surveyStartDate = now.toUtc().toIso8601String();
+    final surveyEndDate = now.add(Duration(days: 1)).toUtc().toIso8601String();
+
+    // Send post request to save survey to the database
+    final surveyResponse = await http.post(
+      Uri.parse('http://localhost:8080/surveys'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'surveyTitle': titleController.text,
+        'surveyDescription': descriptionController.text,
+        'surveyStartDate': surveyStartDate,
+        'surveyEndDate': surveyEndDate,
+        'participants': 0,
+      }),
+    );
+
+    if (surveyResponse.statusCode != 200 && surveyResponse.statusCode != 201) {
+      throw Exception('Failed to save survey to the database');
+    }
+
+    // Parse survey ID from the response
+    final surveyId = jsonDecode(surveyResponse.body)['surveyId'];
+
+    // Send post request to save questions to the database
+    final questionsWithSurveyId = questions.map((question) {
+      return {
+        'surveyId': surveyId,
+        'questionText': question.text,
+        'type': question.type,
+        'isRequired': question.isRequired,
+      };
+    }).toList();
+
+    final questionResponse = await http.post(
+      Uri.parse('http://localhost:8080/api/questions'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(questionsWithSurveyId),
+    );
+
+    if (questionResponse.statusCode != 200 && questionResponse.statusCode != 201) {
+      throw Exception('Failed to save question to the database');
+    }
+
+    // Log the raw response body
+    print('Question Response Body: ${questionResponse.body}');
+
+    // Parse created questions from the response
+    final List<dynamic> jsonResponse = jsonDecode(questionResponse.body);
+    print('Parsed JSON Response: $jsonResponse');
+
+    final createdQuestions = jsonResponse.map((json) => Question.fromJson(json)).toList();
+    print('Created Questions: $createdQuestions');
+
+    // If question type is '객관식 답변', save choices
+    for (var createdQuestion in createdQuestions) {
+      print('Checking question type for question ID: ${createdQuestion.questionId}');
+      print(createdQuestion.type);
+
+      if (createdQuestion.type) {
+        // Find the original question to get the choices
+        final originalQuestion = questions.firstWhere((q) => q.text == createdQuestion.text && q.type == createdQuestion.type);
+
+        List<Map<String, dynamic>> choicesJson = [];
+        for (var choice in originalQuestion.choices!) {
+          choicesJson.add({
+            'questionId': createdQuestion.questionId,
+            'choiceText': choice,
+          });
+        }
+
+        print('Choices JSON for question ID ${createdQuestion.questionId}: $choicesJson');
+
+        try {
+          final choiceResponse = await http.post(
+            Uri.parse('http://localhost:8080/api/choices'),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(choicesJson),
+          );
+
+          print('choice Response Status Code: ${choiceResponse.statusCode}');
+          print('choice Response Body: ${choiceResponse.body}');
+
+          if (choiceResponse.statusCode != 200 && choiceResponse.statusCode != 201) {
+            throw Exception('Failed to save choices to the database');
+          }
+        } catch (e) {
+          print('HTTP request failed: $e');
+        }
+      } else {
+        print('Question type is not "객관식 답변" for question ID: ${createdQuestion.questionId}');
+      }
+    }
+
+    // If everything is successful, navigate to the next page
+    Navigator.of(context).pushReplacementNamed('/app');
   }
 }
 
@@ -187,145 +292,79 @@ class SurveyPage extends StatelessWidget {
         backgroundColor: Color(0xFF48B5BB),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(4.0),
+        padding: const EdgeInsets.all(16.0),
         child: Consumer<SurveyProvider>(
           builder: (context, provider, child) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  color: Color(0xFFD9EEF1),
-                  padding: EdgeInsets.all(4.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextField(
-                        controller: provider.titleController,
-                        decoration: InputDecoration(
-                          labelText: ' 설문 제목',
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(vertical: 4.0), // Adjusting content padding
-                        ),
-                        style: TextStyle(fontSize: 16.0), // 폰트 크기 작게 조정
-                        maxLines: 1,
-                      ),
-                      SizedBox(height: 4.0), // 변경: 위젯 간격 줄임
-                      Container(
-                        padding: EdgeInsets.symmetric(vertical: 4.0), // 변경: 패딩 적용
-                        child: TextField(
-                          controller: provider.questionController,
-                          decoration: InputDecoration(
-                            labelText: ' 질문',
-                            border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(vertical: 4.0), // Adjusting content padding
-                          ),
-                          style: TextStyle(fontSize: 16.0), // 폰트 크기 작게 조정
-                          maxLines: 1,
-                        ),
-                      ),
-                      SizedBox(height: 4.0), // 변경: 위젯 간격 줄임
-                      Row(
-                        children: [
-                          Text('필수 질문'),
-                          SizedBox(width: 8), // Add some space between the text and the switch
-                          Transform.scale(
-                            scale: 0.8, // Reduce the size of the switch
-                            child: Switch(
-                              value: provider.isRequired,
-                              onChanged: (value) {
-                                provider.isRequired = value;
-                                provider.notifyListeners(); // 변경사항 알림
-                              },
-                              activeColor: Color(0xFF48B5BB), // Change the color of the switch
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 4.0), // 변경: 위젯 간격 줄임
-                      if (provider.questionType == '객관식 답변')
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('문항:'),
-                            SizedBox(height: 8.0), // 변경: 위젯 간격 줄임
-                            provider.buildChoiceFields(context),
-                            SizedBox(height: 8.0), // 변경: 위젯 간격 줄임
-                            Row(
-                              children: [
-                                TextButton(
-                                  onPressed: () {
-                                    provider.addChoiceController(context); // 포커스 관련 메서드 호출 시 context 전달
-                                  },
-                                  child: Text(
-                                    '문항 추가',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF48B5BB)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      SizedBox(height: 8.0), // 변경: 위젯 간격 줄임
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {
-                                provider.addQuestion();
-                              },
-                              child: Text(
-                                '질문 추가',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF48B5BB)),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 8.0),
-                          DropdownButton<String>(
-                            value: provider.questionType,
-                            onChanged: (newValue) {
-                              provider.changeQuestionType(newValue!);
-                            },
-                            items: provider.buildDropdownMenuItems(),
-                          ),
-                        ],
-                      ),
-                    ],
+                TextFormField(
+                  controller: provider.titleController,
+                  decoration: InputDecoration(
+                    labelText: 'Survey Title',
                   ),
                 ),
-                SizedBox(height: 12.0), // 변경: 위젯 간격 줄임
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: provider.descriptionController,
+                  decoration: InputDecoration(
+                    labelText: 'Survey Description',
+                  ),
+                ),
+                SizedBox(height: 16),
+                TextFormField(
+                  controller: provider.questionController,
+                  decoration: InputDecoration(
+                    labelText: 'Question',
+                  ),
+                ),
+                SizedBox(height: 16),
+                Row(
+                  children: [
+                    Text('Required'),
+                    Switch(
+                      value: provider.isRequired,
+                      onChanged: (value) {
+                        provider.isRequired = value;
+                        provider.notifyListeners();
+                      },
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                DropdownButton<bool>(
+                  value: provider.questionType,
+                  onChanged: (newValue) {
+                    print("Dropdown value changed to: $newValue");
+                    provider.changeQuestionType(newValue!);
+                  },
+                  items: provider.buildDropdownMenuItems(),
+                ),
+                SizedBox(height: 16),
+                if (provider.questionType) provider.buildChoiceFields(context),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    provider.addQuestion();
+                  },
+                  child: Text('Add Question'),
+                ),
+                SizedBox(height: 16),
                 Expanded(
                   child: ListView.builder(
-                    shrinkWrap: false, // 변경: 스크롤 가능하도록 설정
                     itemCount: provider.questions.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        title: Text(
-                          'Question ${index + 1}',
-                        ),
+                        title: Text('Question ${index + 1}'),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              '질문: ${provider.questions[index].text}',
-                            ),
-                            Text(
-                              '유형: ${provider.questions[index].type}',
-                            ),
+                            Text('Text: ${provider.questions[index].text}'),
+                            Text('Type: ${provider.questions[index].type ? "객관식 답변" : "서술형 답변"}'),
                             if (provider.questions[index].choices != null &&
-                                provider.questions[index].type == '객관식 답변')
-                              Text(
-                                'Choices: ${provider.questions[index].choices!.join(", ")}',
-                              ),
-                            Text( // 추가: 필수 여부 표시
-                              '필수여부: ${provider.questions[index].isRequired ? "필수" : ""}',
-                            ),
+                                provider.questions[index].type)
+                              Text('Choices: ${provider.questions[index].choices!.join(", ")}'),
+                            Text('Required: ${provider.questions[index].isRequired ? "Yes" : "No"}'),
                           ],
                         ),
                         trailing: Row(
@@ -355,20 +394,12 @@ class SurveyPage extends StatelessWidget {
                     },
                   ),
                 ),
-                SizedBox(height: 12.0), // 변경: 위젯 간격 줄임
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacementNamed('/app');
-                    },
-                    child: Text(
-                      '설문 만들기 완료',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF48B5BB)),
-                    ),
-                  ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    provider.finishSurvey(context);
+                  },
+                  child: Text('Finish Create Survey'),
                 ),
               ],
             );
@@ -379,13 +410,30 @@ class SurveyPage extends StatelessWidget {
   }
 }
 
+
 class Question {
   String text;
-  String type;
+  bool type;
   List<String>? choices;
-  bool isRequired; // 추가: 필수 여부
+  bool isRequired;
+  int? questionId;
 
-  Question({required this.text, required this.type, this.choices, required this.isRequired});
+  Question({
+    required this.text,
+    required this.type,
+    this.choices,
+    required this.isRequired,
+    this.questionId,
+  });
+
+  factory Question.fromJson(Map<String, dynamic> json) {
+    return Question(
+      questionId: json['questionId'],
+      text: json['questionText'],
+      type: json['type'] == true,
+      choices: json['choices'] != null ? List<String>.from(json['choices']) : [],
+      isRequired: json['isRequired'],
+    );
+  }
 }
 
-const List<String> questionTypes = ['서술형 답변', '객관식 답변'];
