@@ -1,267 +1,551 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: SwipeDemo(),
-      theme: ThemeData(
-        scaffoldBackgroundColor: Color(0xFFD9EEF1),
-        appBarTheme: AppBarTheme(
-          backgroundColor: Color(0xFF48B5BB),
-        ),
-      ),
-    );
-  }
-}
-
-class SwipeDemo extends StatefulWidget {
-  @override
-  _SwipeDemoState createState() => _SwipeDemoState();
-}
-
-class _SwipeDemoState extends State<SwipeDemo> {
-  late PageController _controller;
-  late List<List<int>> _containerCounts; // 그룹당 설문 개수를 저장할 리스트
-  late List<List<String>> _surveyTitles; // 설문 제목을 저장할 리스트
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = PageController(initialPage: 0);
-    _loadData(); // 데이터 로드
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  // 데이터를 로드하는 메서드
-  Future<void> _loadData() async {
-    _containerCounts = [];
-    _surveyTitles = [];
-    // 그룹당 설문 개수 조회
-    List<int> groupCounts = await _fetchGroupCounts();
-    // 각 그룹에 대해 설문 제목 및 개수 조회
-    for (int i = 0; i < groupCounts.length; i++) {
-      // 그룹별 설문 개수 추가
-      _containerCounts.add([groupCounts[i]]);
-      // 그룹별 설문 제목 추가
-      List<String> titles = [];
-      for (int j = 0; j < groupCounts[i]; j++) {
-        titles.add(await _fetchSurveyTitle(i, j));
-      }
-      _surveyTitles.add(titles);
-    }
-    setState(() {}); // 화면 갱신
-  }
-
-  Future<List<int>> _fetchGroupCounts() async {
-    String apiUrl = 'http://localhost:8080/userGroups/1/survey-titles';
-    try {
-      http.Response response = await http.get(Uri.parse(apiUrl));
-      if (response.statusCode == 200) {
-        dynamic responseData = json.decode(response.body);
-        List<int> groupCounts = (responseData['group_counts'] as List<dynamic>).map<int>((count) => int.parse(count)).toList();
-        return groupCounts;
-      } else {
-        throw Exception('그룹 개수를 불러오는데 실패했습니다');
-      }
-    } catch (e) {
-      print('에러: $e');
-      return [];
-    }
-  }
-
-
-  // 그룹별 설문 제목을 조회하는 메서드
-  Future<String> _fetchSurveyTitle(int groupIndex, int surveyIndex) async {
-    // API 엔드포인트 설정
-    String apiUrl = 'http://localhost:8080/userGroups/$groupIndex/survey-titles';
-    try {
-      // HTTP GET 요청 보내기
-      http.Response response = await http.get(Uri.parse(apiUrl));
-      // 응답 확인
-      if (response.statusCode == 200) {
-        // JSON 데이터 파싱
-        dynamic data = json.decode(response.body);
-        // 설문 제목 반환
-        return data[surveyIndex]['surveyTitle'];
-      } else {
-        // 에러 처리
-        throw Exception('설문 제목을 불러오는데 실패했습니다');
-      }
-    } catch (e) {
-      print('에러: $e');
-      return ''; // 에러 발생 시 빈 문자열 반환
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('메인'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.only(top: 70),
-        child: GestureDetector(
-          onHorizontalDragUpdate: (details) {
-            if (details.delta.dx > 0) {
-              if (_controller.page! > 0) {
-                _controller.previousPage(duration: Duration(milliseconds: 300), curve: Curves.ease);
-              }
-            } else {
-              if (_controller.page! < _containerCounts.length - 1) {
-                _controller.nextPage(duration: Duration(milliseconds: 300), curve: Curves.ease);
-              }
-            }
-          },
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height * 0.45,
-            child: PageView.builder(
-              controller: _controller,
-              itemCount: _containerCounts.length,
-              itemBuilder: (context, pageIndex) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        children: [
-                          Text(
-                            '모임 ${pageIndex + 1}',
-                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                          ),
-                          Spacer(),
-                          IconButton(
-                            icon: Icon(Icons.add),
-                            onPressed: () {
-                              print('모임 ${pageIndex + 1}에 아이템 추가');
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Expanded(
-                      child: _buildPageContainer(pageIndex),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPageContainer(int pageIndex) {
-    Color backgroundColor = Color(0xFFB2DFE6);
-
-    return Container(
-      color: backgroundColor,
-      child: ListView.builder(
-        itemCount: _containerCounts[pageIndex].length,
-        itemBuilder: (context, containerIndex) {
-          return _buildContainerList(pageIndex, containerIndex);
-        },
-      ),
-    );
-  }
-
-  Widget _buildContainerList(int pageIndex, int containerIndex) {
-    return ReorderableListView(
-      padding: EdgeInsets.symmetric(vertical: 8),
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      children: List.generate(
-        _containerCounts[pageIndex][containerIndex],
-            (index) => _buildContainerItem(pageIndex, containerIndex, index),
-      ),
-      onReorder: (oldIndex, newIndex) {
-        setState(() {
-          // Adjust the lists according to the new order
-          final List<int> list = _containerCounts[pageIndex];
-          final item = list.removeAt(oldIndex);
-          list.insert(newIndex, item);
-        });
-      },
-    );
-  }
-
-  Widget _buildContainerItem(int pageIndex, int containerIndex, int index) {
-    Color containerColor = Colors.white;
-
-    return GestureDetector(
-      onTap: () {
-        print('컨테이너 ${index + 1} 선택됨');
-      },
-      key: ValueKey('container_${pageIndex}_${containerIndex}_${index}'),
-      child: Container(
-        width: double.infinity,
-        height: 60,
-        margin: EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          color: containerColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Row(
-          children: [
-            // ReorderableListView 아이콘 추가
-            GestureDetector(
-              onLongPress: () {
-                // Do something when the ReorderableListView icon is pressed
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(left: 10),
-                child: Text(
-                  _surveyTitles[pageIndex][containerIndex], // 설문 제목을 출력
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-            ),
-            // 아이콘들에 패딩 추가
-            IconButton(
-              icon: Icon(Icons.share),
-              onPressed: () {
-                print('컨테이너 ${index + 1} 공유 버튼 클릭됨');
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.poll),
-              onPressed: () {
-                print('컨테이너 ${index + 1} 결과 조회 버튼 클릭됨');
-              },
-            ),
-            Padding(
-              padding: EdgeInsets.only(right: 30),
-              child: IconButton(
-                icon: Icon(Icons.settings),
-                onPressed: () {
-                  print('컨테이너 ${index + 1} 설정 버튼 클릭됨');
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'dart:convert'; // for json decoding
+// import 'package:http/http.dart' as http;
+// import 'package:project_team8/answer_survey.dart';
+// import 'create_survey1.dart';
+// import 'app_login.dart'; // Import the app_login.dart file
+// import 'update_user.dart'; // Import the update_user.dart file
+//
+// void main() {
+//   runApp(MyApp());
+// }
+//
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: SwipeDemo(),
+//       theme: ThemeData(
+//         scaffoldBackgroundColor: Color(0xFFD9EEF1),
+//         appBarTheme: AppBarTheme(
+//           backgroundColor: Color(0xFF48B5BB),
+//         ),
+//       ),
+//       routes: {
+//         '/login': (context) => LoginPage(), // Define the route for login page
+//         '/update': (context) => UpdateUser(), // Define the route for update user page
+//         '/answer': (context) => AnswerSurvey(), // Define the route for answer survey page
+//       },
+//     );
+//   }
+// }
+//
+// class SwipeDemo extends StatefulWidget {
+//   @override
+//   _SwipeDemoState createState() => _SwipeDemoState();
+// }
+//
+// class _SwipeDemoState extends State<SwipeDemo> {
+//   late PageController _controller;
+//   late List<Map<String, dynamic>> _surveyData = [];
+//   late List<Map<String, dynamic>> _filteredSurveyData = [];
+//   bool _isLoading = true;
+//   String? _error;
+//   int _selectedGroupIndex = 0;
+//   List<Map<String, dynamic>> _groups = [];
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _controller = PageController(initialPage: 0);
+//     _fetchData();
+//     _controller.addListener(() {
+//       setState(() {
+//         _selectedGroupIndex = _controller.page!.round();
+//         _filterSurveysByGroup(_selectedGroupIndex);
+//       });
+//     });
+//   }
+//
+//   Future<void> _fetchData() async {
+//     final url = 'http://localhost:8080/api/user-groups/user/1';
+//
+//     try {
+//       final response = await http.get(Uri.parse(url));
+//
+//       if (response.statusCode == 200 || response.statusCode == 201) {
+//         final List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+//         setState(() {
+//           _surveyData = data.map((item) => item as Map<String, dynamic>).toList();
+//           _groups = _surveyData.map((item) => item['group'] as Map<String, dynamic>).toList();
+//           _isLoading = false;
+//         });
+//       } else {
+//         setState(() {
+//           _error = '데이터를 불러오는데 실패했습니다: 상태 코드 ${response.statusCode}';
+//           _isLoading = false;
+//         });
+//       }
+//     } catch (e) {
+//       setState(() {
+//         _error = '데이터를 불러오는데 오류가 발생했습니다: $e';
+//         _isLoading = false;
+//       });
+//     }
+//   }
+//
+//   void _filterSurveysByGroup(int groupIndex) {
+//     final groupId = _groups[groupIndex]['groupId'];
+//     setState(() {
+//       _filteredSurveyData = _surveyData.where((survey) => survey['group']['groupId'] == groupId).toList();
+//     });
+//   }
+//
+//   void _editGroupName(int groupIndex, String newGroupName) {
+//     setState(() {
+//       _groups[groupIndex]['groupName'] = newGroupName;
+//     });
+//   }
+//
+//   void _deleteGroup(int groupIndex) {
+//     setState(() {
+//       if (_groups.length > 1) {
+//         _groups.removeAt(groupIndex);
+//         _selectedGroupIndex = _selectedGroupIndex % _groups.length;
+//       } else {
+//         showDialog(
+//           context: context,
+//           builder: (context) => AlertDialog(
+//             title: Text('그룹 삭제'),
+//             content: Text('최소 한 개의 그룹이 있어야 합니다.'),
+//             actions: [
+//               TextButton(
+//                 onPressed: () => Navigator.pop(context),
+//                 child: Text('확인'),
+//               ),
+//             ],
+//           ),
+//         );
+//       }
+//       _filterSurveysByGroup(_selectedGroupIndex);
+//     });
+//   }
+//
+//   @override
+//   void dispose() {
+//     _controller.dispose();
+//     super.dispose();
+//   }
+//
+//   void _showEditGroupDialog(int groupIndex) {
+//     final TextEditingController groupNameController = TextEditingController();
+//     groupNameController.text = _groups[groupIndex]['groupName'];
+//
+//     showDialog(
+//       context: context,
+//       builder: (context) {
+//         return AlertDialog(
+//           title: Text('그룹 이름 수정'),
+//           content: TextField(
+//             controller: groupNameController,
+//             decoration: InputDecoration(hintText: '그룹 이름 입력'),
+//           ),
+//           actions: [
+//             ElevatedButton(
+//               onPressed: () {
+//                 final groupName = groupNameController.text.trim();
+//                 if (groupName.isNotEmpty) {
+//                   _editGroupName(groupIndex, groupName);
+//                   Navigator.of(context).pop();
+//                 }
+//               },
+//               child: Text('수정'),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+//
+//   void _addGroup(String newGroupName) {
+//     setState(() {
+//       final newGroup = {
+//         'groupId': _groups.length + 1,
+//         'groupName': newGroupName,
+//       };
+//       _groups.add(newGroup);
+//       _selectedGroupIndex = _groups.length - 1;
+//       _filterSurveysByGroup(_selectedGroupIndex);
+//     });
+//   }
+//
+//   void _deleteSurvey(int index) {
+//     final surveyId = _filteredSurveyData[index]['survey']['surveyId'];
+//     showDialog(
+//       context: context,
+//       builder: (context) {
+//         return AlertDialog(
+//           title: Text('설문 삭제'),
+//           content: Text('선택한 설문을 삭제하시겠습니까?'),
+//           actions: [
+//             TextButton(
+//               onPressed: () async {
+//                 final url = 'http://localhost:8080/api/user-groups/user/1/survey/$surveyId';
+//                 try {
+//                   final response = await http.delete(Uri.parse(url));
+//                   if (response.statusCode == 204) {
+//                     // 삭제 성공
+//                     setState(() {
+//                       _filteredSurveyData.removeAt(index);
+//                     });
+//                     Navigator.pop(context); // 다이얼로그 닫기
+//                   } else {
+//                     // 삭제 실패
+//                     Navigator.pop(context); // 다이얼로그 닫기
+//                     showDialog(
+//                       context: context,
+//                       builder: (context) {
+//                         return AlertDialog(
+//                           title: Text('설문 삭제 실패'),
+//                           content: Text('설문 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.'),
+//                           actions: [
+//                             TextButton(
+//                               onPressed: () {
+//                                 Navigator.pop(context); // 실패 다이얼로그 닫기
+//                               },
+//                               child: Text('확인'),
+//                             ),
+//                           ],
+//                         );
+//                       },
+//                     );
+//                   }
+//                 } catch (e) {
+//                   // 삭제 실패
+//                   Navigator.pop(context); // 다이얼로그 닫기
+//                   showDialog(
+//                     context: context,
+//                     builder: (context) {
+//                       return AlertDialog(
+//                         title: Text('설문 삭제 실패'),
+//                         content: Text('설문 삭제 중 오류가 발생했습니다: $e'),
+//                         actions: [
+//                           TextButton(
+//                             onPressed: () {
+//                               Navigator.pop(context); // 실패 다이얼로그 닫기
+//                             },
+//                             child: Text('확인'),
+//                           ),                        ],
+//                       );
+//                     },
+//                   );
+//                 }
+//               },
+//               child: Text('삭제'),
+//             ),
+//             TextButton(
+//               onPressed: () {
+//                 Navigator.pop(context); // 다이얼로그 닫기
+//               },
+//               child: Text('취소'),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         leading: GestureDetector(
+//           onTap: () {
+//             // Dropdown menu for logout and profile edit
+//             showModalBottomSheet(
+//               context: context,
+//               builder: (context) {
+//                 return Container(
+//                   height: 150,
+//                   child: Column(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     crossAxisAlignment: CrossAxisAlignment.stretch,
+//                     children: [
+//                       TextButton(
+//                         onPressed: () {
+//                           // Logout logic
+//                           showDialog(
+//                             context: context,
+//                             builder: (context) => AlertDialog(
+//                               title: Text('로그아웃'),
+//                               content: Text('로그아웃 하시겠습니까?'),
+//                               actions: [
+//                                 TextButton(
+//                                   onPressed: () {
+//                                     // Perform logout action here
+//                                     Navigator.pop(context); // Close confirmation dialog
+//                                     Navigator.of(context).pushReplacementNamed('/login'); // Navigate to login page
+//                                   },
+//                                   child: Text('로그아웃'),
+//                                 ),
+//                                 TextButton(
+//                                   onPressed: () {
+//                                     Navigator.pop(context); // Close confirmation dialog
+//                                   },
+//                                   child: Text('취소'),
+//                                 ),
+//                               ],
+//                             ),
+//                           );
+//                         },
+//                         child: Text('로그아웃'),
+//                       ),
+//                       TextButton(
+//                         onPressed: () {
+//                           // Profile edit logic
+//                           Navigator.of(context).pushNamed('/update'); // Navigate to update user page
+//                         },
+//                         child: Text('회원정보 수정'),
+//                       ),
+//                     ],
+//                   ),
+//                 );
+//               },
+//             );
+//           },
+//           child: Row(
+//             children: [
+//               Padding(
+//                 padding: const EdgeInsets.all(4.0),
+//                 child: CircleAvatar(
+//                   backgroundImage: AssetImage('assets/images/dku-logo.png'),
+//                 ),
+//               ),
+//               Padding(
+//                 padding: const EdgeInsets.only(right: 40.0),
+//                 child: Text(
+//                   '정성원님, 환영합니다 !',
+//                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//       body: Stack(
+//         children: [
+//           _isLoading
+//               ? Center(child: CircularProgressIndicator())
+//               : _error != null
+//               ? Center(child: Text(_error!))
+//               : Padding(
+//             padding: EdgeInsets.only(top: 70),
+//             child: GestureDetector(
+//               onHorizontalDragUpdate: (details) {
+//                 if (details.delta.dx > 0) {
+//                   if (_controller.page! > 0) {
+//                     _controller.previousPage(
+//                       duration: Duration(milliseconds: 300),
+//                       curve: Curves.ease,
+//                     );
+//                   }
+//                 } else {
+//                   if (_controller.page! < _groups.length - 1) {
+//                     _controller.nextPage(
+//                       duration: Duration(milliseconds: 300),
+//                       curve: Curves.ease,
+//                     );
+//                   }
+//                 }
+//               },
+//               child: Container(
+//                 width: MediaQuery.of(context).size.width,
+//                 height: MediaQuery.of(context).size.height * 0.45,
+//                 child: PageView.builder(
+//                   controller: _controller,
+//                   itemCount: _groups.length,
+//                   itemBuilder: (context, index) {
+//                     return Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         Padding(
+//                           padding: const EdgeInsets.symmetric(horizontal: 20),
+//                           child: Row(
+//                             children: [
+//                               Text(
+//                                 '그룹: ${_groups[index]['groupName']}',
+//                                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+//                               ),
+//                               Spacer(),
+//                               IconButton(
+//                                 icon: Icon(Icons.add),
+//                                 onPressed: () {
+//                                   Navigator.push(
+//                                     context,
+//                                     MaterialPageRoute(builder: (context) => SurveyApp()),
+//                                   );
+//                                 },
+//                               ),
+//                               IconButton(
+//                                 icon: Icon(Icons.edit),
+//                                 onPressed: () {
+//                                   _showEditGroupDialog(index);
+//                                 },
+//                               ),
+//                               IconButton(
+//                                 icon: Icon(Icons.delete),
+//                                 onPressed: () {
+//                                   _deleteGroup(index);
+//                                 },
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                         SizedBox(height: 10),
+//                         Expanded(
+//                           child: _buildPageContainer(),
+//                         ),
+//                       ],
+//                     );
+//                   },
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         backgroundColor: Color(0xFFB2DFE6),
+//         onPressed: _showAddGroupDialog,
+//         child: Icon(Icons.group_add),
+//         tooltip: '그룹 추가',
+//       ),
+//       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+//     );
+//   }
+//
+//   Widget _buildPageContainer() {
+//     Color backgroundColor = Color(0xFFB2DFE6);
+//
+//     return Container(
+//       color: backgroundColor,
+//       child: ListView.builder(
+//         itemCount: _filteredSurveyData.length,
+//         itemBuilder: (context, containerIndex) {
+//           return _buildContainerItem(containerIndex);
+//         },
+//       ),
+//     );
+//   }
+//
+//   Widget _buildContainerItem(int index) {
+//     Color containerColor = Colors.white;
+//
+//     return GestureDetector(
+//       onTap: () {
+//         print('설문 ${index + 1} 선택됨');
+//       },
+//       key: ValueKey('container_$index'),
+//       child: Container(
+//         width: double.infinity,
+//         height: 60,
+//         margin: EdgeInsets.symmetric(vertical: 8),
+//         decoration: BoxDecoration(
+//           color: containerColor,
+//           borderRadius: BorderRadius.circular(10),
+//         ),
+//         child: Row(
+//           children: [
+//             Expanded(
+//               child: Padding(
+//                 padding: EdgeInsets.only(left: 10),
+//                 child: Text(
+//                   _filteredSurveyData[index]['survey']['surveyTitle'],
+//                   style: TextStyle(fontSize: 18),
+//                 ),
+//               ),
+//             ),
+//             IconButton(
+//               icon: Icon(Icons.share),
+//               onPressed: () {
+//                 showDialog(
+//                   context: context,
+//                   builder: (context) {
+//                     return AlertDialog(
+//                       backgroundColor: Color(0xFFB2DFE6),
+//                       title: Text('설문 공유'),
+//                       content: Column(
+//                         mainAxisSize: MainAxisSize.min,
+//                         children: [
+//                           TextButton(
+//                             onPressed: () {
+//                               // Copy link logic
+//                               final surveyId = _filteredSurveyData[index]['survey']['surveyId'];
+//                               final surveyUrl = 'http://exampleurl.com/surveys/$surveyId';
+//                               // Copy to clipboard logic
+//                               Clipboard.setData(ClipboardData(text: surveyUrl));
+//                               ScaffoldMessenger.of(context).showSnackBar(
+//                                 SnackBar(
+//                                   content: Text('설문 링크가 복사되었습니다.'),
+//                                 ),
+//                               );
+//                             },
+//                             // Copy link logic
+//                             child: Text('링크 복사하기'),
+//                           ),
+//                           TextButton(
+//                             onPressed: () {
+//                               // Share via KakaoTalk logic
+//                             },
+//                             child: Text('카카오톡으로 공유하기'),
+//                           ),
+//                         ],
+//                       ),
+//                     );
+//                   },
+//                 );
+//               },
+//             ),
+//             IconButton(
+//               icon: Icon(Icons.poll),
+//               onPressed: () {
+//                 print('설문 ${index + 1} 결과 조회 버튼 클릭됨');
+//               },
+//             ),
+//             Padding(
+//               padding: EdgeInsets.only(right: 30),
+//               child: IconButton(
+//                 icon: Icon(Icons.delete),
+//                 onPressed: () {
+//                   _deleteSurvey(index);
+//                 },
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+//   void _showAddGroupDialog() {
+//     final TextEditingController groupNameController = TextEditingController();
+//
+//     showDialog(
+//       context: context,
+//       builder: (context) {
+//         return AlertDialog(
+//           title: Text('새 그룹 추가'),
+//           content: TextField(
+//             controller: groupNameController,
+//             decoration: InputDecoration(hintText: '그룹 이름 입력'),
+//           ),
+//           actions: [
+//             ElevatedButton(
+//               onPressed: () {
+//                 final groupName = groupNameController.text.trim();
+//                 if (groupName.isNotEmpty) {
+//                   _addGroup(groupName);
+//                   Navigator.of(context).pop();
+//                 }
+//               },
+//               child: Text('추가'),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+// }
+//
+//

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:project_team8/fee_result.dart';
+import 'package:project_team8/survey_result.dart';
 
 void main() {
-  runApp(SurveyApp());
+  runApp(ClickedApp());
 }
 
-class SurveyApp extends StatelessWidget {
+class ClickedApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -38,7 +40,10 @@ class SurveyPage extends StatelessWidget {
               height: 60,
               child: ElevatedButton(
                 onPressed: () {
-                  // 설문 결과 버튼이 눌렸을 때의 동작
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SurveyResult()),
+                  );// 설문 결과 버튼이 눌렸을 때의 동작
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF48B5BB), // 버튼 배경색
@@ -59,7 +64,10 @@ class SurveyPage extends StatelessWidget {
               height: 60,
               child: ElevatedButton(
                 onPressed: () {
-                  // 회부 납부 내역 버튼이 눌렸을 때의 동작
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PaymentStatusPage()),
+                  );// 회부 납부 내역 버튼이 눌렸을 때의 동작
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF48B5BB), // 버튼 배경색
