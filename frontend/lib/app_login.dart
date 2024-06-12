@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:project_team8/app_main.dart';
 import 'package:project_team8/app_main1.dart';
 import 'package:project_team8/create_user2.dart';
+import 'package:project_team8/create_user1.dart';
+import 'package:project_team8/create_survey2.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'dart:convert';
 import 'dart:io';
@@ -119,14 +121,18 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('입력 오류'),
-            content: Text('이메일과 비밀번호를 입력해주세요.'),
+            backgroundColor: Color(0xFFB2DFE6),
+            title: Text('입력 오류', style: TextStyle(color: Colors.black)),
+            content: Text('이메일과 비밀번호를 입력해주세요.', style: TextStyle(color: Colors.black)),
             actions: [
               TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Color(0xFF48B5BB), // 원하는 배경색으로 변경하세요
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('확인'),
+                child: Text('확인', style: TextStyle(color: Colors.black)),
               ),
             ],
           );
@@ -134,7 +140,6 @@ class _LoginPageState extends State<LoginPage> {
       );
       return;
     }
-
     Login login = Login(userEmail: email, userPassword: password);
 
     setState(() {
@@ -151,8 +156,12 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (response.statusCode == 200) {
-        // 로그인 성공 시 MyApp으로 이동
-        Navigator.of(context).pushReplacementNamed('/app');
+        // 로그인 성공 시 userId를 추출
+        final responseBody = jsonDecode(response.body);
+        final userId = responseBody['userId'];
+
+        // userId를 app_main1.dart로 전달
+        Navigator.of(context).pushReplacementNamed('/app', arguments: userId);
       } else {
         throw Exception('Failed to login');
       }
@@ -166,8 +175,9 @@ class _LoginPageState extends State<LoginPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('로그인 실패'),
-            content: Text('이메일 또는 비밀번호가 올바르지 않습니다. 다시 시도해주세요.'),
+            backgroundColor: Color(0xFFB2DFE6),
+            title: Text('로그인 실패', style: TextStyle(color: Colors.black)),
+            content: Text('이메일 또는 비밀번호가 올바르지 않습니다. 다시 시도해주세요.', style: TextStyle(color: Colors.black)),
             actions: [
               TextButton(
                 onPressed: () {
@@ -186,101 +196,104 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Color(0xFFD9EEF1),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 100.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 270,
-                height: 230,
-                child: Image.asset(
-                  'assets/images/dku-logo.png', // 이미지 경로에 따라 수정해주세요
-                  fit: BoxFit.cover,
-                ),
-              ),
-              SizedBox(height: 75.0),
-              SizedBox(
-                width: 500,
-                child: TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: '사용자 Email',
-                    border: OutlineInputBorder(),
+      body: SingleChildScrollView(
+        child: Container(
+          color: Color(0xFFD9EEF1),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 100.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 270,
+                  height: 230,
+                  child: Image.asset(
+                    'assets/images/dku-logo.png', // 이미지 경로에 따라 수정해주세요
+                    fit: BoxFit.cover,
                   ),
                 ),
-              ),
-              SizedBox(height: 20.0), // 조금 간격 추가
-              SizedBox(
-                width: 500,
-                child: TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: '비밀번호',
-                    border: OutlineInputBorder(),
+                SizedBox(height: 75.0),
+                SizedBox(
+                  width: 500,
+                  child: TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: '사용자 Email',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 50.0),
-              _isLoading
-                  ? CircularProgressIndicator()
-                  : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  ElevatedButton(
-                    onPressed: _login, // 로그인 버튼 눌릴 때 _login 함수 호출
-                    child: Text('로그인'),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF48B5BB)),
-                      foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                      minimumSize: MaterialStateProperty.all(Size(130, 50)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                SizedBox(height: 20.0), // 조금 간격 추가
+                SizedBox(
+                  width: 500,
+                  child: TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: '비밀번호',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 50.0),
+                _isLoading
+                    ? CircularProgressIndicator()
+                    : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    ElevatedButton(
+                      onPressed: _login, // 로그인 버튼 눌릴 때 _login 함수 호출
+                      child: Text('로그인'),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF48B5BB)),
+                        foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                        minimumSize: MaterialStateProperty.all(Size(130, 50)),
+                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed: signInWithKakao,
-                    child: Text('카카오 로그인'),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFFFE812)),
-                      foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                      minimumSize: MaterialStateProperty.all(Size(130, 50)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                    ElevatedButton(
+                      onPressed: signInWithKakao,
+                      child: Text('카카오 로그인'),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFFFE812)),
+                        foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+                        minimumSize: MaterialStateProperty.all(Size(130, 50)),
+                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20.0), // 버튼과 회원가입 버튼 사이 간격 추가
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushReplacementNamed('/create');
-                },
-                child: Text('회원가입'),
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF48B5BB)),
-                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                  minimumSize: MaterialStateProperty.all(Size(130, 50)),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                  ],
+                ),
+                SizedBox(height: 20.0), // 버튼과 회원가입 버튼 사이 간격 추가
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacementNamed('/create');
+                  },
+                  child: Text('회원가입'),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF48B5BB)),
+                    foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                    minimumSize: MaterialStateProperty.all(Size(130, 50)),
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

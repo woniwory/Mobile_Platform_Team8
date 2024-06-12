@@ -9,8 +9,11 @@ void main() {
 }
 
 class AnswerSurvey extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    final questionId = ModalRoute.of(context)?.settings.arguments as int;
+
     return MaterialApp(
       title: '설문 응답하기',
       theme: ThemeData(
@@ -29,7 +32,7 @@ class AnswerSurvey extends StatelessWidget {
           ),
         ),
       ),
-      home: SurveyQuestionsPage(),
+      home: SurveyQuestionsPage(questionId: questionId),
       routes: {
         '/app': (context) => MyApp(), // '/app' 경로에 대한 위젯 설정
 
@@ -39,6 +42,9 @@ class AnswerSurvey extends StatelessWidget {
 }
 
 class SurveyQuestionsPage extends StatefulWidget {
+  final int questionId;
+
+  SurveyQuestionsPage({required this.questionId});
   @override
   _SurveyQuestionsPageState createState() => _SurveyQuestionsPageState();
 }
@@ -50,11 +56,11 @@ class _SurveyQuestionsPageState extends State<SurveyQuestionsPage> {
   @override
   void initState() {
     super.initState();
-    fetchQuestions();
+    fetchQuestions(widget.questionId);
   }
 
-  Future<void> fetchQuestions() async {
-    final response = await http.get(Uri.parse('http://localhost:8080/api/questions/survey/1'));
+  Future<void> fetchQuestions(int questionId) async {
+    final response = await http.get(Uri.parse('http://localhost:8080/api/questions/survey/$questionId'));
     if (response.statusCode == 200) {
       final List<Map<String, dynamic>> fetchedQuestions = List<Map<String, dynamic>>.from(jsonDecode(response.body));
       setState(() {

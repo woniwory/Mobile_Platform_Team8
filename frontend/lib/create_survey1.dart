@@ -12,13 +12,17 @@ void main() {
 }
 
 class SurveyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    final userId = ModalRoute.of(context)?.settings.arguments as int;
+    print(userId);
     return MaterialApp(
       title: 'Survey App',
       home: ChangeNotifierProvider(
-        create: (context) => SurveyProvider(),
-        child: SurveyPage(),
+        create: (context) => SurveyProvider(userId: userId),
+        child: SurveyPage(userId: userId),
+
       ),
       routes: {
         '/app': (context) => MyApp(),
@@ -37,6 +41,9 @@ class SurveyProvider extends ChangeNotifier {
   List<TextEditingController> choiceControllers = [];
   bool questionType = false;
   bool required = false;
+
+  final int userId;
+  SurveyProvider({required this.userId});
 
   Future<void> addQuestion() async {
     print("addQuestion: $questionType");
@@ -302,9 +309,6 @@ class SurveyProvider extends ChangeNotifier {
     }
 
 
-
-    int userId = 1;
-    int groupId = 1;
     // Send post request to save survey to the database
     final userGroupResponse = await http.post(
       Uri.parse('http://localhost:8080/api/user-groups'),
@@ -313,7 +317,7 @@ class SurveyProvider extends ChangeNotifier {
       },
       body: jsonEncode(<String, dynamic>{
           "user": {
-            "userId": 1
+            "userId": userId
           },
           "group": {
             "groupId": 1
@@ -331,200 +335,207 @@ class SurveyProvider extends ChangeNotifier {
 
 
     // If everything is successful, navigate to the next page
-    Navigator.of(context).pushReplacementNamed('/app');
+    Navigator.of(context).pushReplacementNamed('/app', arguments: userId);
   }
 
 
 }
 
 class SurveyPage extends StatefulWidget {
+  final int userId;
+
+  SurveyPage({required this.userId});
+
   @override
   _SurveyPageState createState() => _SurveyPageState();
 }
 
 class _SurveyPageState extends State<SurveyPage> {
+
   @override
   Widget build(BuildContext context) {
+    final userId = widget.userId;
+    print(userId);
     return Scaffold(
-      appBar: AppBar(
-        title: Text('설문 만들기'),
-        backgroundColor: Color(0xFF48B5BB),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pushReplacementNamed('/app'); // app_main1.dart로 이동
-          },
+        appBar: AppBar(
+          title: Text('설문 만들기'),
+          backgroundColor: Color(0xFF48B5BB),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed('/app', arguments: userId); // app_main1.dart로 이동
+            },
+          ),
         ),
-      ),
-      body: Container(
-    color: Color(0xFFD9EEF1), // 배경 색상 변경
-    child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Consumer<SurveyProvider>(
-          builder: (context, provider, child) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextFormField(
-                  controller: provider.titleController,
-                  decoration: InputDecoration(
-                    labelText: '설문 제목',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return '제목을 추가해주세요';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16),
-                TextFormField(
-                  controller: provider.descriptionController,
-                  decoration: InputDecoration(
-                    labelText: '설문 설명',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return '설명을 추가해주세요';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16),
-                TextFormField(
-                  controller: provider.questionController,
-                  decoration: InputDecoration(
-                    labelText: '질문',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return '질문을 추가해주세요';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16),
-                TextFormField(
-                  controller: provider.requiredPaymentController,
-                  decoration: InputDecoration(
-                    labelText: '회비',
-                  ),
-                  keyboardType: TextInputType.number, // 숫자 입력을 위한 키보드 타입 설정
-                ),
-
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    Text('필수 여부'),
-                    Switch(
-                      value: provider.required,
-                      onChanged: (value) {
-                        provider.required = value;
-                        provider.notifyListeners();
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                DropdownButton<bool>(
-                  value: provider.questionType,
-                  onChanged: (newValue) {
-                    setState(() {
-                      provider.questionType = newValue!;
-                      print("Selected value: ${provider.questionType}");
-                    });
-                    print("Dropdown value changed to: $newValue");
-                    provider.changeQuestionType(newValue!);
-                  },
-                  items: provider.buildDropdownMenuItems(),
-                ),
-                SizedBox(height: 16),
-                if (provider.questionType) provider.buildChoiceFields(context),
-                SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    provider.addQuestion();
-                  },
-                  child: Text('질문 추가하기', style: TextStyle(color: Colors.black)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF48B5BB), // 버튼 색상 변경
-                      minimumSize: Size(130, 50),
-                      shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    ),
-                ),
-                SizedBox(height: 16),
-                Expanded(
-                child: provider.questions.isEmpty
-                ? Center(child: Text('No questions added yet'))
-                  :  ListView.builder(
-                      itemCount: provider.questions.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text('Question ${index + 1}'),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Text: ${provider.questions[index].text}'),
-                              Text('Type: ${provider.questions[index].type ? "객관식 답변" : "서술형 답변"}'),
-                              if (provider.questions[index].choices != null &&
-                                  provider.questions[index].type)
-                                Text('Choices: ${provider.questions[index].choices!.join(", ")}'),
-                              Text('Required: ${provider.questions[index].required ? "Yes" : "No"}'),
-                            ],
+        body: Container(
+          color: Color(0xFFD9EEF1), // 배경 색상 변경
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Consumer<SurveyProvider>(
+              builder: (context, provider, child) {
+                return SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextFormField(
+                        controller: provider.titleController,
+                        decoration: InputDecoration(
+                          labelText: '설문 제목',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '제목을 추가해주세요';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      TextFormField(
+                        controller: provider.descriptionController,
+                        decoration: InputDecoration(
+                          labelText: '설문 설명',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '설명을 추가해주세요';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      TextFormField(
+                        controller: provider.questionController,
+                        decoration: InputDecoration(
+                          labelText: '질문',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '질문을 추가해주세요';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      TextFormField(
+                        controller: provider.requiredPaymentController,
+                        decoration: InputDecoration(
+                          labelText: '회비',
+                        ),
+                        keyboardType: TextInputType.number, // 숫자 입력을 위한 키보드 타입 설정
+                      ),
+                      SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Text('필수 여부'),
+                          Switch(
+                            value: provider.required,
+                            onChanged: (value) {
+                              provider.required = value;
+                              provider.notifyListeners();
+                            },
                           ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.edit),
-                                onPressed: () {
-                                  provider.editQuestion(index);
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () {
-                                  provider.deleteQuestion(index);
-                                },
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.save),
-                                onPressed: () {
-                                  provider.saveEditedQuestion(index);
-                                },
-                              ),
-                            ],
+                        ],
+                      ),
+                      SizedBox(height: 16),
+                      DropdownButton<bool>(
+                        value: provider.questionType,
+                        onChanged: (newValue) {
+                          setState(() {
+                            provider.questionType = newValue!;
+                            print("Selected value: ${provider.questionType}");
+                          });
+                          print("Dropdown value changed to: $newValue");
+                          provider.changeQuestionType(newValue!);
+                        },
+                        items: provider.buildDropdownMenuItems(),
+                      ),
+                      SizedBox(height: 16),
+                      if (provider.questionType) provider.buildChoiceFields(context),
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          provider.addQuestion();
+                        },
+                        child: Text('질문 추가하기', style: TextStyle(color: Colors.black)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF48B5BB), // 버튼 색상 변경
+                          minimumSize: Size(130, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
                           ),
-                        );
-                      },
-                    ),
-                ),
-                SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    if (provider.titleController.text.isEmpty) {
-                      // Display error message or validation feedback
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('제목을 추가해주세요')),
-                      );
-                    }
-                    else if (
-                        provider.descriptionController.text.isEmpty) {
-                      // Display error message or validation feedback
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('설명을 추가해주세요')),
-                      );
-                    }
-                    else if (
-                        provider.questionController.text.isEmpty && provider.questions.isEmpty) {
-                          if(provider.questionController.text.isEmpty){
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      provider.questions.isEmpty
+                          ? Center(child: Text('No questions added yet'))
+                          : ListView.builder(
+                        shrinkWrap: true, // ListView가 SingleChildScrollView 내에서 동작하도록 설정
+                        physics: NeverScrollableScrollPhysics(), // SingleChildScrollView 내에서 스크롤을 막음
+                        itemCount: provider.questions.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text('Question ${index + 1}'),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Text: ${provider.questions[index].text}'),
+                                Text('Type: ${provider.questions[index].type ? "객관식 답변" : "서술형 답변"}'),
+                                if (provider.questions[index].choices != null &&
+                                    provider.questions[index].type)
+                                  Text('Choices: ${provider.questions[index].choices!.join(", ")}'),
+                                Text('Required: ${provider.questions[index].required ? "Yes" : "No"}'),
+                              ],
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.edit),
+                                  onPressed: () {
+                                    provider.editQuestion(index);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.delete),
+                                  onPressed: () {
+                                    provider.deleteQuestion(index);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.save),
+                                  onPressed: () {
+                                    provider.saveEditedQuestion(index);
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (provider.titleController.text.isEmpty) {
                             // Display error message or validation feedback
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('질문을 추가해주세요')),
+                              SnackBar(content: Text('제목을 추가해주세요')),
                             );
                           }
+                          else if (
+                          provider.descriptionController.text.isEmpty) {
+                            // Display error message or validation feedback
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('설명을 추가해주세요')),
+                            );
+                          }
+                          else if (
+                          provider.questionController.text.isEmpty && provider.questions.isEmpty) {
+                            if(provider.questionController.text.isEmpty){
+                              // Display error message or validation feedback
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('질문을 추가해주세요')),
+                              );
+                            }
                             else if (
                             provider.questions.isEmpty) {
                               // Display error message or validation feedback
@@ -532,36 +543,38 @@ class _SurveyPageState extends State<SurveyPage> {
                                 SnackBar(content: Text('질문 추가하기 버튼을 눌러주세요')),
                               );
                             }
-                    }
-                    else if (
-                    provider.questions.isEmpty) {
-                      // Display error message or validation feedback
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('질문 추가하기 버튼을 눌러주세요')),
-                      );
-                    }
-                    else {
-                      provider.finishSurvey(context);
-                    }
-                  },
-                  child: Text('완료', style: TextStyle(color: Colors.black)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF48B5BB), // 버튼 색상 변경
-                      minimumSize: Size(130, 50),
-                      shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                ),
-                )
-              ],
-            );
-          },
-        ),
-      ),
-      )
+                          }
+                          else if (
+                          provider.questions.isEmpty) {
+                            // Display error message or validation feedback
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('질문 추가하기 버튼을 눌러주세요')),
+                            );
+                          }
+                          else {
+                            provider.finishSurvey(context);
+                          }
+                        },
+                        child: Text('완료', style: TextStyle(color: Colors.black)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF48B5BB), // 버튼 색상 변경
+                          minimumSize: Size(130, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        )
     );
   }
 }
+
 
 class Question {
   String text;

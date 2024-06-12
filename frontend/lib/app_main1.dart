@@ -15,8 +15,9 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final userId = ModalRoute.of(context)?.settings.arguments as int;
     return MaterialApp(
-      home: SwipeDemo(),
+      home: SwipeDemo(userId: userId),
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFFD9EEF1),
         appBarTheme: AppBarTheme(
@@ -27,12 +28,17 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginPage(), // Define the route for login page
         '/update': (context) => UpdateUser(), // Define the route for update user page
         '/answer': (context) => AnswerSurvey(), // Define the route for answer survey page
+        '/survey' : (context) => SurveyApp(),
       },
     );
   }
 }
 
 class SwipeDemo extends StatefulWidget {
+  final int userId;
+
+  SwipeDemo({required this.userId});
+
   @override
   _SwipeDemoState createState() => _SwipeDemoState();
 }
@@ -50,7 +56,7 @@ class _SwipeDemoState extends State<SwipeDemo> {
   void initState() {
     super.initState();
     _controller = PageController(initialPage: 0);
-    _fetchData();
+    _fetchData(widget.userId);
     _controller.addListener(() {
       setState(() {
         _selectedGroupIndex = _controller.page!.round();
@@ -59,9 +65,9 @@ class _SwipeDemoState extends State<SwipeDemo> {
     });
   }
 
-  Future<void> _fetchData() async {
-    final url = 'http://localhost:8080/api/user-groups/user/1';
-
+  Future<void> _fetchData(int userId) async {
+    final url = 'http://localhost:8080/api/user-groups/user/$userId';
+    print(userId);
     try {
       final response = await http.get(Uri.parse(url));
 
@@ -415,10 +421,12 @@ class _SwipeDemoState extends State<SwipeDemo> {
                               IconButton(
                                 icon: Icon(Icons.add),
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => SurveyApp()),
-                                  );
+                                  final userId = widget.userId; // Fetch the userId from widget
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(builder: (context) => SurveyApp(userId: userId)),
+                                  // );
+                                  Navigator.of(context).pushReplacementNamed('/survey', arguments: userId);
                                 },
                               ),
                               IconButton(
@@ -480,9 +488,14 @@ class _SwipeDemoState extends State<SwipeDemo> {
       onTap: () {
         print('설문 ${index + 1} 선택됨');
         // Fetch survey details and navigate to answer survey page
-          Navigator.of(context).pushReplacementNamed('/answer');
-
-
+        // Navigator.of(context).push(
+        //   MaterialPageRoute(
+        //     builder: (context) => AnswerSurvey(questionId: _filteredSurveyData[index]['survey']['questionId']),
+        //   ),
+        // );
+        final questionId = _filteredSurveyData[index]['survey']['questionId'];
+        print(questionId);
+        Navigator.of(context).pushReplacementNamed('/answer', arguments: questionId);
       },
       key: ValueKey('container_$index'),
       child: Container(
