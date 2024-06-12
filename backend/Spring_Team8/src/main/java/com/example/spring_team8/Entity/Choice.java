@@ -23,6 +23,7 @@ public class Choice {
     private Question question;
 
     private String choiceText;
+    private Boolean type;
 
 
 

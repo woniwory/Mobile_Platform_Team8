@@ -14,8 +14,12 @@ class CreateUser extends StatelessWidget {
     return MaterialApp(
       title: 'Profile Edit Demo',
       theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          color: Color(0xFF48B5BB), // 앱바 색상
+        ),
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        scaffoldBackgroundColor: Color(0xFFD9EEF1), // 앱 배경색
       ),
       home: ProfileEditScreen(),
       routes: {
@@ -36,7 +40,6 @@ class ProfileEditScreen extends StatefulWidget {
 
 class ProfileEditScreenState extends State<ProfileEditScreen> {
   final _formkey = GlobalKey<FormState>();
-  String? _userAccountNumber = '234234234';
   String? _userEmail = 'psh911@naver.com';
   String? _userName = '박수현';
   String? _userPassword = '박수현Password';
@@ -46,7 +49,7 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.profile == null ? "회원가입" : "회원정보 수정"),
+        title: Text("회원가입",style: TextStyle(color: Colors.white)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -54,17 +57,7 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
           key: _formkey,
           child: Column(
             children: <Widget>[
-              TextFormField(
-                initialValue: _userAccountNumber,
-                decoration: const InputDecoration(labelText: "사용자 계좌번호"),
-                onSaved: (value) => _userAccountNumber = value,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "내용을 입력하세요";
-                  }
-                  return null;
-                },
-              ),
+
               SizedBox(height: 15),
               TextFormField(
                 initialValue: _userEmail,
@@ -131,12 +124,14 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
               ),
               SizedBox(height: 15),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF48B5BB), // 버튼 배경색
+                ),
                 onPressed: () {
                   if (_formkey.currentState!.validate()) {
                     _formkey.currentState!.save();
 
                     final newProfile = Profile(
-                      userAccountNumber: _userAccountNumber,
                       userEmail: _userEmail,
                       userName: _userName,
                       userPassword: _userPassword,
@@ -167,14 +162,22 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text('회원가입 완료'),
-                              content: Text('회원가입이 완료되었습니다.'),
+                              backgroundColor: Color(0xFFB2DFE6),
+                              title: Text('회원가입 완료',
+                                  style: TextStyle(color: Colors.black)),
+                              content: Text('회원가입이 완료되었습니다.',
+                                  style: TextStyle(color: Colors.black)),
                               actions: [
                                 TextButton(
+
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: Color(0xFFB2DFE6), // 원하는 배경색으로 변경하세요
+                                  ),
                                   onPressed: () {
                                     Navigator.of(context).pushReplacementNamed('/login');
                                   },
-                                  child: Text('확인'),
+                                  child: Text('확인',
+                                      style: TextStyle(color: Colors.black)),
                                 ),
                               ],
                             );
@@ -189,7 +192,8 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
                     });
                   }
                 },
-                child: const Text("저장하기"),
+                child: const Text("저장하기",
+                    style: TextStyle(color: Colors.black)),
               ),
             ],
           ),

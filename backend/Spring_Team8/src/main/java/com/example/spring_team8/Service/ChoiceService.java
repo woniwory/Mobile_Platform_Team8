@@ -39,6 +39,8 @@ public class ChoiceService {
         Choice choice = new Choice();
         choice.setQuestion(question);
         choice.setChoiceText(choiceDTO.getChoiceText());
+        choice.setType(choiceDTO.getType());
+
 
         System.out.println("Saving choice: " + choice);
 

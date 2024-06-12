@@ -15,4 +15,5 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
 
     List<UserGroup> findByUserUserId(Long userId);
 
+    Optional<UserGroup> findByUserUserIdAndSurveySurveyId(Long userId, Long surveyId);
 }

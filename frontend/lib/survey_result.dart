@@ -27,7 +27,6 @@ class SurveyQuestions extends StatefulWidget {
 class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProviderStateMixin {
   List<dynamic> questions = [];
   List<int> questionIds = []; // 질문 ID를 저장할 리스트
-  int get total => questionIds.length;
   late AnimationController _controller;
 
   @override
@@ -51,7 +50,7 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
 
     if (response.statusCode == 200) {
       setState(() {
-        questions = json.decode(response.body);
+        questions = json.decode(utf8.decode(response.bodyBytes)); // UTF-8로 디코딩
 
         // 질문 ID를 저장
         questionIds = questions.map<int>((question) => question['questionId']).toList();
@@ -100,16 +99,17 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
                 Text("질문 ${index + 1}: $questionText", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 SizedBox(height: 10),
                 responseType ? FutureBuilder(
-                  future: http.get(Uri.parse(responsesUrl)),
+                  future: fetchResponses(responsesUrl),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();
                     } else if (snapshot.hasError) {
                       return Text("Error: ${snapshot.error}");
                     } else {
-                      final responseData = json.decode(snapshot.data?.body ?? "");
+                      final responseData = snapshot.data as List<dynamic>? ?? [];
                       final choices = responseData.where((response) => response['choice'] != null).toList();
                       final descriptiveResponses = responseData.where((response) => response['responseText'] != null).toList();
+                      final totalResponses = choices.length;
 
                       // 객관식 선택지 비율 계산
                       final choiceCounts = <String, int>{};
@@ -147,7 +147,7 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     for (var entry in choiceCounts.entries)
-                                      Text("${entry.key}: ${(entry.value / total*100).toStringAsFixed(2)}%"),
+                                      Text("${entry.key}: ${(entry.value / totalResponses * 100).toStringAsFixed(2)}%"),
                                   ],
                                 ),
                               ],
@@ -166,14 +166,14 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
                     }
                   },
                 ) : FutureBuilder(
-                  future: http.get(Uri.parse(responsesUrl)),
+                  future: fetchResponses(responsesUrl),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();
                     } else if (snapshot.hasError) {
                       return Text("Error: ${snapshot.error}");
                     } else {
-                      final responseData = json.decode(snapshot.data?.body ?? "");
+                      final responseData = snapshot.data as List<dynamic>? ?? [];
                       final descriptiveResponses = responseData.where((response) => response['responseText'] != null).toList();
 
                       return Column(
@@ -198,6 +198,15 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
         },
       ),
     );
+  }
+
+  Future<List<dynamic>> fetchResponses(String url) async {
+    final response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      return json.decode(utf8.decode(response.bodyBytes)); // UTF-8로 디코딩
+    } else {
+      throw Exception('Failed to load responses');
+    }
   }
 }
 

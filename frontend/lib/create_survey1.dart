@@ -275,11 +275,14 @@ class SurveyProvider extends ChangeNotifier {
         final originalQuestion = questions.firstWhere(
                 (q) => q.text == createdQuestion['questionText'] && q.type == createdQuestion['type']);
 
+        print(originalQuestion.type);
+        print("createdQuestion['type']: ${createdQuestion['type']}");
         List<Map<String, dynamic>> choicesJson = [];
         for (var choice in originalQuestion.choices!) {
           choicesJson.add({
             'questionId': createdQuestion['questionId'],
             'choiceText': choice,
+            'type': createdQuestion['type']
           });
         }
 

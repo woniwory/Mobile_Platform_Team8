@@ -10,6 +10,7 @@ public class ChoiceDTO {
     private Long choiceId;
     private Long questionId;
     private String choiceText;
+    private Boolean type;
 
 
 }

@@ -21,10 +21,10 @@ public class Question {
     @JoinColumn(name = "survey_id")
     private Survey survey;
 
-    private boolean required;
+    private Boolean required;
 
     private String questionText;
 
-    private boolean type;
+    private Boolean type;
 
 }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:project_team8/Profile.dart';
-
+import 'package:project_team8/app_main1.dart';
+import 'profile.dart';
+import 'app_login.dart'; // 로그인 화면이 정의된 파일을 임포트합니다.
 
 void main() {
   runApp(UpdateUser());
@@ -11,21 +12,30 @@ void main() {
 class UpdateUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final userId = ModalRoute.of(context)?.settings.arguments as int;
     return MaterialApp(
       title: 'Profile Edit Demo',
       theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          color: Color(0xFF48B5BB), // 앱바 색상
+        ),
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        scaffoldBackgroundColor: Color(0xFFD9EEF1), // 앱 배경색
       ),
-      home: ProfileEditScreen(),
+      home: ProfileEditScreen(userId: userId),
+      routes: {
+        '/app': (context) => MyApp(), // 로그인 화면 라우트를 추가합니다.
+      },
     );
   }
 }
 
 class ProfileEditScreen extends StatefulWidget {
-  final Profile? profile;
 
-  const ProfileEditScreen({Key? key, this.profile}) : super(key: key);
+  final int userId;
+
+  const ProfileEditScreen({Key? key, required this.userId}) : super(key: key);
 
   @override
   ProfileEditScreenState createState() => ProfileEditScreenState();
@@ -33,16 +43,16 @@ class ProfileEditScreen extends StatefulWidget {
 
 class ProfileEditScreenState extends State<ProfileEditScreen> {
   final _formkey = GlobalKey<FormState>();
-  String? _userAccountNumber = '234234234';
-  String? _userEmail = 'psh911@naver.com';
-  String? _userName = '박수현';
-  String? _userPassword = '박수현Password';
+  String? _userEmail = '123@naver.com';
+  String? _userName = '정성원';
+  String? _userPassword = '정성원Password';
+  String? _userPasswordConfirm = '정성원Password';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("회원정보 수정"),
+        title: Text("회원수정",style: TextStyle(color: Colors.white)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -50,17 +60,7 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
           key: _formkey,
           child: Column(
             children: <Widget>[
-              TextFormField(
-                initialValue: _userAccountNumber,
-                decoration: const InputDecoration(labelText: "사용자 계좌번호"),
-                onSaved: (value) => _userAccountNumber = value,
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "내용을 입력하세요";
-                  }
-                  return null;
-                },
-              ),
+
               SizedBox(height: 15),
               TextFormField(
                 initialValue: _userEmail,
@@ -109,13 +109,32 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
                 },
               ),
               SizedBox(height: 15),
+              TextFormField(
+                initialValue: _userPasswordConfirm,
+                decoration: const InputDecoration(labelText: "비밀번호 확인"),
+                obscureText: true,
+                onChanged: (value) => _userPasswordConfirm = value,
+                onSaved: (value) => _userPasswordConfirm = value,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return "내용을 입력하세요";
+                  }
+                  if (value != _userPassword) {
+                    return "비밀번호가 일치하지 않습니다";
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 15),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF48B5BB), // 버튼 배경색
+                ),
                 onPressed: () {
                   if (_formkey.currentState!.validate()) {
                     _formkey.currentState!.save();
 
                     final newProfile = Profile(
-                      userAccountNumber: _userAccountNumber,
                       userEmail: _userEmail,
                       userName: _userName,
                       userPassword: _userPassword,
@@ -127,7 +146,7 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
                     final requestBody = json.encode(jsonData);
 
                     // 서버 주소
-                    String url = 'http://localhost:8080/api/users/3';
+                    String url = 'http://localhost:8080/api/users/2';
 
                     // HTTP POST 요청 보내기
                     http.put(
@@ -138,14 +157,36 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
                       body: requestBody,
                     ).then((response) {
                       // 응답 확인
-                      if (response.statusCode == 201) {
+                      if (response.statusCode == 201 || response.statusCode == 200) {
                         // 서버로부터 온 응답 데이터 출력
                         print('Response: ${response.body}');
-                        // 성공 시 다음 화면으로 이동
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(builder: (context) => NextPage()),
-                        // );
+                        // 회원가입 완료 메시지를 표시하고 로그인 화면으로 이동
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              backgroundColor: Color(0xFFB2DFE6),
+                              title: Text('회원수정 완료',
+                                  style: TextStyle(color: Colors.black)),
+                              content: Text('회원수정이 완료되었습니다.',
+                                  style: TextStyle(color: Colors.black)),
+                              actions: [
+                                TextButton(
+
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: Color(0xFFB2DFE6), // 원하는 배경색으로 변경하세요
+                                  ),
+                                  onPressed: () {
+                                    final userId = widget.userId;
+                                    Navigator.of(context).pushReplacementNamed('/app', arguments: userId);
+                                  },
+                                  child: Text('확인',
+                                      style: TextStyle(color: Colors.black)),
+                                ),
+                              ],
+                            );
+                          },
+                        );
                       } else {
                         // 에러 처리
                         print('Failed with status code: ${response.statusCode}');
@@ -155,7 +196,8 @@ class ProfileEditScreenState extends State<ProfileEditScreen> {
                     });
                   }
                 },
-                child: const Text("저장하기"),
+                child: const Text("저장하기",
+                    style: TextStyle(color: Colors.black)),
               ),
             ],
           ),

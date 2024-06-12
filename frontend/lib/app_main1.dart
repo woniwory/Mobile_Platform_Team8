@@ -343,8 +343,9 @@ class _SwipeDemoState extends State<SwipeDemo> {
                       ),
                       TextButton(
                         onPressed: () {
+                          final userId = widget.userId;
                           // Profile edit logic
-                          Navigator.of(context).pushNamed('/update'); // Navigate to update user page
+                          Navigator.of(context).pushNamed('/update', arguments: userId); // Navigate to update user page
                         },
                         child: Text('회원정보 수정'),
                       ),
@@ -493,9 +494,14 @@ class _SwipeDemoState extends State<SwipeDemo> {
         //     builder: (context) => AnswerSurvey(questionId: _filteredSurveyData[index]['survey']['questionId']),
         //   ),
         // );
-        final questionId = _filteredSurveyData[index]['survey']['questionId'];
-        print(questionId);
-        Navigator.of(context).pushReplacementNamed('/answer', arguments: questionId);
+        final surveyId = _filteredSurveyData[index]['survey']['surveyId'];
+        final userId = _filteredSurveyData[index]['user']['userId'];
+        print(_filteredSurveyData[index]);
+        print(surveyId);
+        Navigator.of(context).pushReplacementNamed(
+          '/answer',
+          arguments: {'userId': userId, 'surveyId': surveyId},
+        );
       },
       key: ValueKey('container_$index'),
       child: Container(
