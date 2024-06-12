@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:math';
 
+import 'package:project_team8/app_main1.dart';
+
 void main() {
   runApp(SurveyResult());
 }
@@ -10,16 +12,26 @@ void main() {
 class SurveyResult extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    final int surveyId = args['surveyId'];
+    final int userId = args['userId'];
     return MaterialApp(
-      home: SurveyQuestions(),
+      home: SurveyQuestions(surveyId: surveyId, userId: userId),
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFFD9EEF1), // 앱의 배경색 지정
       ),
+      routes: {
+        '/app': (context) => MyApp(),
+      },
     );
   }
 }
 
 class SurveyQuestions extends StatefulWidget {
+  final int surveyId;
+  final int userId;
+
+  SurveyQuestions({required this.surveyId, required this.userId});
   @override
   _SurveyQuestionsState createState() => _SurveyQuestionsState();
 }
@@ -37,7 +49,7 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    fetchQuestions();
+    fetchQuestions(widget.surveyId);
   }
 
   @override
@@ -46,12 +58,12 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
     super.dispose();
   }
 
-  Future<void> fetchQuestions() async {
-    final response = await http.get(Uri.parse("http://localhost:8080/api/questions/survey/1"));
+  Future<void> fetchQuestions(int surveyId) async {
+    final response = await http.get(Uri.parse("http://localhost:8080/api/questions/survey/$surveyId"));
 
     if (response.statusCode == 200) {
       setState(() {
-        questions = json.decode(response.body);
+        questions = json.decode(utf8.decode(response.bodyBytes)); // UTF-8로 디코딩
 
         // 질문 ID를 저장
         questionIds = questions.map<int>((question) => question['questionId']).toList();
@@ -66,11 +78,19 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
+    final userId = widget.userId;
     return Scaffold(
       appBar: AppBar(
         title: Text('설문 결과 조회', style: TextStyle(color: Colors.white)),
         backgroundColor: Color(0xFF48B5BB), // AppBar의 색상 지정
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pushReplacementNamed('/app', arguments: userId); // app_main1.dart로 이동
+          },
+        ),
       ),
+
       body: ListView.builder(
         itemCount: questions.length,
         itemBuilder: (context, index) {
@@ -78,7 +98,8 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
           final questionText = question['questionText'];
           final responseType = question['type'];
           final responsesUrl = "http://localhost:8080/api/responses/question/${questionIds[index]}"; // 질문 ID 리스트를 사용하여 동적으로 URL 생성
-
+          print(question);
+          print(responseType);
           return Container(
             margin: EdgeInsets.all(10),
             padding: EdgeInsets.all(10),
@@ -106,11 +127,12 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
                       return CircularProgressIndicator();
                     } else if (snapshot.hasError) {
                       return Text("Error: ${snapshot.error}");
-                    } else {
-                      final responseData = json.decode(snapshot.data?.body ?? "");
-                      final choices = responseData.where((response) => response['choice'] != null).toList();
+                    } else if (snapshot.hasData && snapshot.data != null) {
+                      final responseData = json.decode(utf8.decode(snapshot.data!.bodyBytes)); // UTF-8로 디코딩
+                      final choices = responseData.where((response) => response['responseText'] != null).toList();
                       final descriptiveResponses = responseData.where((response) => response['responseText'] != null).toList();
 
+                      print(total);
                       // 객관식 선택지 비율 계산
                       final choiceCounts = <String, int>{};
                       for (var choice in choices) {
@@ -121,8 +143,12 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
                           choiceCounts[choiceText] = 1;
                         }
                       }
+                      print(responseData);
+                      print("choices $choices");
+                      print(choiceCounts);
 
                       return Column(
+
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (choiceCounts.isNotEmpty)
@@ -148,7 +174,9 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
                                   children: [
                                     for (var entry in choiceCounts.entries)
                                       Text("${entry.key}: ${(entry.value / total*100).toStringAsFixed(2)}%"),
+
                                   ],
+
                                 ),
                               ],
                             ),
@@ -163,6 +191,8 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
                             ),
                         ],
                       );
+                    } else {
+                      return Text("No data");
                     }
                   },
                 ) : FutureBuilder(
@@ -172,8 +202,8 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
                       return CircularProgressIndicator();
                     } else if (snapshot.hasError) {
                       return Text("Error: ${snapshot.error}");
-                    } else {
-                      final responseData = json.decode(snapshot.data?.body ?? "");
+                    } else if (snapshot.hasData && snapshot.data != null) {
+                      final responseData = json.decode(utf8.decode(snapshot.data!.bodyBytes)); // UTF-8로 디코딩
                       final descriptiveResponses = responseData.where((response) => response['responseText'] != null).toList();
 
                       return Column(
@@ -189,6 +219,8 @@ class _SurveyQuestionsState extends State<SurveyQuestions> with SingleTickerProv
                             ),
                         ],
                       );
+                    } else {
+                      return Text("No data");
                     }
                   },
                 ),
@@ -210,6 +242,7 @@ class PieChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final total = data.values.fold(0, (sum, value) => sum + value);
+    print(total);
     double startAngle = -90.0;
 
     final paint = Paint()

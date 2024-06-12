@@ -5,7 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ff7d2fa7-9d85-4049-b2be-e06321d4429d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/backend/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/Mobile.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/ChoiceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/ChoiceController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/GroupController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/GroupController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/QuestionController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/QuestionController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/ResponseController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/ResponseController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/SurveyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/SurveyController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/UserGroupController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/UserGroupController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/UserSurveyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Spring_Team8/src/main/java/com/example/spring_team8/Controller/UserSurveyController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,19 +80,20 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.cidr.known.project.marker": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
     "dart.analysis.tool.window.visible": "false",
     "git-widget-placeholder": "main",
     "io.flutter.reload.alreadyRun": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Flutter/Mobile_Platform_Team8/frontend",
+    "last_opened_file_path": "C:/flutter/bin/cache/dart-sdk",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "configurable.group.tools",
+    "settings.editor.selected.configurable": "flutter.settings",
     "show.migrate.to.gradle.popup": "false",
     "vue.rearranger.settings.migration": "true"
   }

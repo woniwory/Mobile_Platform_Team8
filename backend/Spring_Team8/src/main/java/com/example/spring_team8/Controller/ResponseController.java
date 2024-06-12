@@ -32,6 +32,10 @@ public class ResponseController {
     @Autowired
     private QuestionRepository questionRepository;
 
+
+    @Autowired
+    private ChoiceRepository choiceRepository;
+
     @GetMapping
     public ResponseEntity<List<Response>> getAllResponses() {
         List<Response> responses = responseService.getAllResponses();
@@ -53,12 +57,15 @@ public class ResponseController {
 
             User user = userRepository.findById(dto.getUserId())
                     .orElseThrow(() -> new RuntimeException("User not found with id: " + dto.getUserId()));
+            Choice choiceId = choiceRepository.findById(dto.getChoiceId())
+                    .orElseThrow(() -> new RuntimeException("Choice not found with id: " + dto.getChoiceId()));
 
 
 
             Response response = new Response();
             response.setQuestion(question);
             response.setUser(user);
+            response.setChoice(choiceId);
             response.setResponseText(dto.getResponseText());
             responses.add(response);
         }

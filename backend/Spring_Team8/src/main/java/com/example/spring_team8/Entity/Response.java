@@ -20,9 +20,15 @@ public class Response {
     private Question question;
 
     @ManyToOne
+    @JoinColumn(name = "choice_id")
+    private Choice choice;
+
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
 
     private String responseText;
+
+
 }

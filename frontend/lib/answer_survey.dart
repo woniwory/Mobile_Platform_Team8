@@ -9,8 +9,13 @@ void main() {
 }
 
 class AnswerSurvey extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    final int surveyId = args['surveyId'];
+    final int userId = args['userId'];
+
     return MaterialApp(
       title: '설문 응답하기',
       theme: ThemeData(
@@ -29,7 +34,7 @@ class AnswerSurvey extends StatelessWidget {
           ),
         ),
       ),
-      home: SurveyQuestionsPage(),
+      home: SurveyQuestionsPage(surveyId: surveyId, userId: userId),
       routes: {
         '/app': (context) => MyApp(), // '/app' 경로에 대한 위젯 설정
 
@@ -39,6 +44,10 @@ class AnswerSurvey extends StatelessWidget {
 }
 
 class SurveyQuestionsPage extends StatefulWidget {
+  final int surveyId;
+  final int userId;
+
+  SurveyQuestionsPage({required this.surveyId, required this.userId});
   @override
   _SurveyQuestionsPageState createState() => _SurveyQuestionsPageState();
 }
@@ -50,13 +59,14 @@ class _SurveyQuestionsPageState extends State<SurveyQuestionsPage> {
   @override
   void initState() {
     super.initState();
-    fetchQuestions();
+    fetchQuestions(widget.surveyId);
   }
 
-  Future<void> fetchQuestions() async {
-    final response = await http.get(Uri.parse('http://localhost:8080/api/questions/survey/1'));
+  Future<void> fetchQuestions(int questionId) async {
+    final response = await http.get(Uri.parse('http://localhost:8080/api/questions/survey/$questionId'));
     if (response.statusCode == 200) {
-      final List<Map<String, dynamic>> fetchedQuestions = List<Map<String, dynamic>>.from(jsonDecode(response.body));
+      final List<Map<String, dynamic>> fetchedQuestions = List<Map<String, dynamic>>.from(jsonDecode(utf8.decode(response.bodyBytes)));
+
       setState(() {
         questions = fetchedQuestions;
         print(questions);
@@ -71,11 +81,11 @@ class _SurveyQuestionsPageState extends State<SurveyQuestionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('설문 응답하기'),
+        title: Text('설문 응답하기', style: TextStyle(color: Colors.white)),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.of(context).pushReplacementNamed('/app');
+            Navigator.of(context).pushReplacementNamed('/app', arguments: widget.userId);
           },
         ),
       ),
@@ -83,6 +93,7 @@ class _SurveyQuestionsPageState extends State<SurveyQuestionsPage> {
         itemCount: questions.length,
         itemBuilder: (context, index) {
           final question = questions[index];
+          print(question);
           final selectedChoice = selectedChoices[index];
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,8 +129,7 @@ class _SurveyQuestionsPageState extends State<SurveyQuestionsPage> {
                             onChanged: (int? value) {
                               setState(() {
                                 selectedChoices[index] = value;
-                                print(value);
-
+                                // question['responseText'] = value; // ID를 responseText로 저장
                               });
                             },
                           );
@@ -127,6 +137,7 @@ class _SurveyQuestionsPageState extends State<SurveyQuestionsPage> {
                       );
                     }
                   },
+
                 ),
               ),
               SizedBox(height: 8),
@@ -147,7 +158,7 @@ class _SurveyQuestionsPageState extends State<SurveyQuestionsPage> {
   Future<List<Map<String, dynamic>>> fetchChoices(int questionId) async {
     final response = await http.get(Uri.parse('http://localhost:8080/api/choices/question/$questionId'));
     if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(jsonDecode(response.body));
+      return List<Map<String, dynamic>>.from(jsonDecode(utf8.decode(response.bodyBytes)));
     } else {
       throw Exception('Failed to load choices');
     }
@@ -156,17 +167,16 @@ class _SurveyQuestionsPageState extends State<SurveyQuestionsPage> {
   Future<void> finishSurvey() async {
     final List<Map<String, dynamic>> responses = questions.map((question) {
       final int questionIndex = questions.indexOf(question);
-      final selectedChoice = selectedChoices[0];
+      final selectedChoice = selectedChoices[questionIndex];
       print("selectedChoice $selectedChoice");
 
       return {
         'questionId': question['questionId'],
-        'userId': 1, // Placeholder for user
+        'userId': widget.userId, // Placeholder for user
         "choiceId": selectedChoice,
-        'responseText': question['responseText'],
+        'responseText': question['type'] == false ? question['responseText'] ?? '' : '',
       };
     }).toList();
-
 
     final response = await http.post(
       Uri.parse('http://localhost:8080/api/responses'),
@@ -175,12 +185,13 @@ class _SurveyQuestionsPageState extends State<SurveyQuestionsPage> {
       },
       body: jsonEncode(responses),
     );
-    print("response ${response}");
+    print("response $response");
     if (response.statusCode == 200 || response.statusCode == 201) {
       print('Survey completed successfully');
-      Navigator.of(context).pushReplacementNamed('/app');
+      Navigator.of(context).pushReplacementNamed('/app', arguments: widget.userId);
     } else {
       print('Failed to complete survey');
     }
   }
+
 }

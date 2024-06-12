@@ -15,8 +15,9 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final userId = ModalRoute.of(context)?.settings.arguments as int;
     return MaterialApp(
-      home: SwipeDemo(),
+      home: SwipeDemo(userId: userId),
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFFD9EEF1),
         appBarTheme: AppBarTheme(
@@ -27,12 +28,18 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginPage(), // Define the route for login page
         '/update': (context) => UpdateUser(), // Define the route for update user page
         '/answer': (context) => AnswerSurvey(), // Define the route for answer survey page
+        '/survey' : (context) => SurveyApp(),
+        '/click' : (context) => ClickedApp()
       },
     );
   }
 }
 
 class SwipeDemo extends StatefulWidget {
+  final int userId;
+
+  SwipeDemo({required this.userId});
+
   @override
   _SwipeDemoState createState() => _SwipeDemoState();
 }
@@ -45,12 +52,13 @@ class _SwipeDemoState extends State<SwipeDemo> {
   String? _error;
   int _selectedGroupIndex = 0;
   List<Map<String, dynamic>> _groups = [];
+  List<List<String>> _containerCounts = [];
 
   @override
   void initState() {
     super.initState();
     _controller = PageController(initialPage: 0);
-    _fetchData();
+    _fetchData(widget.userId);
     _controller.addListener(() {
       setState(() {
         _selectedGroupIndex = _controller.page!.round();
@@ -59,9 +67,9 @@ class _SwipeDemoState extends State<SwipeDemo> {
     });
   }
 
-  Future<void> _fetchData() async {
-    final url = 'http://localhost:8080/api/user-groups/user/1';
-
+  Future<void> _fetchData(int userId) async {
+    final url = 'http://localhost:8080/api/user-groups/user/$userId';
+    print(userId);
     try {
       final response = await http.get(Uri.parse(url));
 
@@ -71,6 +79,9 @@ class _SwipeDemoState extends State<SwipeDemo> {
           _surveyData = data.map((item) => item as Map<String, dynamic>).toList();
           _groups = _surveyData.map((item) => item['group'] as Map<String, dynamic>).toList();
           _isLoading = false;
+
+          // Apply filter based on initial group index
+          _filterSurveysByGroup(_selectedGroupIndex);
         });
       } else {
         setState(() {
@@ -86,12 +97,15 @@ class _SwipeDemoState extends State<SwipeDemo> {
     }
   }
 
+
   void _filterSurveysByGroup(int groupIndex) {
     final groupId = _groups[groupIndex]['groupId'];
     setState(() {
+      // Ensure _filteredSurveyData is cleared before adding new filtered data
       _filteredSurveyData = _surveyData.where((survey) => survey['group']['groupId'] == groupId).toList();
     });
   }
+
 
   // void _editGroupName(int groupIndex, String newGroupName) {
   //   setState(() {
@@ -337,8 +351,9 @@ class _SwipeDemoState extends State<SwipeDemo> {
                       ),
                       TextButton(
                         onPressed: () {
+                          final userId = widget.userId;
                           // Profile edit logic
-                          Navigator.of(context).pushNamed('/update'); // Navigate to update user page
+                          Navigator.of(context).pushNamed('/update', arguments: userId); // Navigate to update user page
                         },
                         child: Text('회원정보 수정'),
                       ),
@@ -399,7 +414,7 @@ class _SwipeDemoState extends State<SwipeDemo> {
                 child: PageView.builder(
                   controller: _controller,
                   itemCount: _groups.length,
-                  itemBuilder: (context, index) {
+                  itemBuilder: (context, pageIndex) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -408,29 +423,31 @@ class _SwipeDemoState extends State<SwipeDemo> {
                           child: Row(
                             children: [
                               Text(
-                                '그룹: ${_groups[index]['groupName']}',
+                                '그룹: ${_groups[pageIndex]['groupName']}',
                                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                               Spacer(),
                               IconButton(
                                 icon: Icon(Icons.add),
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => SurveyApp()),
-                                  );
+                                  final userId = widget.userId; // Fetch the userId from widget
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(builder: (context) => SurveyApp(userId: userId)),
+                                  // );
+                                  Navigator.of(context).pushReplacementNamed('/survey', arguments: userId);
                                 },
                               ),
                               IconButton(
                                 icon: Icon(Icons.edit),
                                 onPressed: () {
-                                  _showEditGroupDialog(index);
+                                  _showEditGroupDialog(pageIndex);
                                 },
                               ),
                               IconButton(
                                 icon: Icon(Icons.delete),
                                 onPressed: () {
-                                  _deleteGroup(index);
+                                  _deleteGroup(pageIndex);
                                 },
                               ),
                             ],
@@ -438,7 +455,7 @@ class _SwipeDemoState extends State<SwipeDemo> {
                         ),
                         SizedBox(height: 10),
                         Expanded(
-                          child: _buildPageContainer(),
+                          child: _buildPageContainer(pageIndex),
                         ),
                       ],
                     );
@@ -459,7 +476,7 @@ class _SwipeDemoState extends State<SwipeDemo> {
     );
   }
 
-  Widget _buildPageContainer() {
+  Widget _buildPageContainer(int pageIndex) {
     Color backgroundColor = Color(0xFFB2DFE6);
 
     return Container(
@@ -467,24 +484,67 @@ class _SwipeDemoState extends State<SwipeDemo> {
       child: ListView.builder(
         itemCount: _filteredSurveyData.length,
         itemBuilder: (context, containerIndex) {
-          return _buildContainerItem(containerIndex);
+          return _buildContainerList(pageIndex);
         },
       ),
     );
   }
+  Widget _buildContainerList(int pageIndex) {
+    // Ensure the _containerCounts list has a sublist for each group
+    if (pageIndex >= _containerCounts.length) {
+      _containerCounts.add(List<String>.generate(_filteredSurveyData.length, (index) => '')); // 초기값을 설정
+    }
 
-  Widget _buildContainerItem(int index) {
+    return ReorderableListView(
+      key: PageStorageKey<int>(pageIndex),
+      padding: EdgeInsets.symmetric(vertical: 8),
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      children: List.generate(
+        _filteredSurveyData.length,
+            (index) => _buildContainerItem(pageIndex, index),
+      ),
+      onReorder: (int oldIndex, int newIndex) {
+        setState(() {
+          if (oldIndex < newIndex) {
+            newIndex -= 1;
+          }
+          final item = _filteredSurveyData.removeAt(oldIndex);
+          _filteredSurveyData.insert(newIndex, item);
+
+          // Update the corresponding _containerCounts list as well
+          final String countItem = _containerCounts[pageIndex].removeAt(oldIndex);
+          _containerCounts[pageIndex].insert(newIndex, countItem);
+        });
+      },
+    );
+  }
+
+
+
+
+  Widget _buildContainerItem(int pageIndex, int index) {
     Color containerColor = Colors.white;
 
     return GestureDetector(
       onTap: () {
         print('설문 ${index + 1} 선택됨');
         // Fetch survey details and navigate to answer survey page
-          Navigator.of(context).pushReplacementNamed('/answer');
-
-
+        // Navigator.of(context).push(
+        //   MaterialPageRoute(
+        //     builder: (context) => AnswerSurvey(questionId: _filteredSurveyData[index]['survey']['questionId']),
+        //   ),
+        // );
+        final surveyId = _filteredSurveyData[index]['survey']['surveyId'];
+        final userId = _filteredSurveyData[index]['user']['userId'];
+        print(_filteredSurveyData[index]);
+        print(surveyId);
+        Navigator.of(context).pushReplacementNamed(
+          '/answer',
+          arguments: {'userId': userId, 'surveyId': surveyId},
+        );
       },
-      key: ValueKey('container_$index'),
+      key: ValueKey('container_${pageIndex}_${index}'),
       child: Container(
         width: double.infinity,
         height: 60,
@@ -548,10 +608,12 @@ class _SwipeDemoState extends State<SwipeDemo> {
             IconButton(
               icon: Icon(Icons.poll),
               onPressed: () {
+                final surveyId = _filteredSurveyData[index]['survey']['surveyId'];
+                final userId = _filteredSurveyData[index]['user']['userId'];
                 print('설문 ${index + 1} 결과 조회 버튼 클릭됨');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ClickedApp()),
+                Navigator.of(context).pushReplacementNamed(
+                  '/click',
+                  arguments: {'userId': userId, 'surveyId': surveyId},
                 );
               },
             ),

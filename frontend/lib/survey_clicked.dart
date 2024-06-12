@@ -9,6 +9,9 @@ void main() {
 class ClickedApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    final int surveyId = args['surveyId'];
+    final int userId = args['userId'];
     return MaterialApp(
       theme: ThemeData(
         appBarTheme: AppBarTheme(
@@ -16,12 +19,20 @@ class ClickedApp extends StatelessWidget {
         ),
         scaffoldBackgroundColor: Color(0xFFD9EEF1), // 앱 배경색
       ),
-      home: SurveyPage(),
+      home: SurveyPage(surveyId: surveyId, userId: userId),
+      routes: {
+        '/result' : (context) => SurveyResult()
+      },
     );
   }
 }
 
 class SurveyPage extends StatelessWidget {
+  final int surveyId;
+  final int userId;
+
+  SurveyPage({required this.surveyId, required this.userId});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,9 +51,9 @@ class SurveyPage extends StatelessWidget {
               height: 60,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SurveyResult()),
+                  Navigator.of(context).pushReplacementNamed(
+                    '/result',
+                    arguments: {'userId': userId, 'surveyId': surveyId},
                   );// 설문 결과 버튼이 눌렸을 때의 동작
                 },
                 style: ElevatedButton.styleFrom(

@@ -28,5 +28,9 @@ public class Survey {
 
     private Long participants;
 
+    private Long requiredPayment;
+
+
+
 
 }

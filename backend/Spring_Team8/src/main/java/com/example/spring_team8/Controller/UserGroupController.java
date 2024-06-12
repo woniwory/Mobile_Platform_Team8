@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 
+
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("api/user-groups")
@@ -44,11 +45,12 @@ public class UserGroupController {
         return updatedUserGroup != null ? new ResponseEntity<>(updatedUserGroup, HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUserGroup(@PathVariable Long id) {
-        userGroupService.deleteUserGroup(id);
+    @DeleteMapping("/user/{userId}/survey/{surveyId}")
+    public ResponseEntity<Void> deleteUserSurvey(@PathVariable Long userId, @PathVariable Long surveyId) {
+        userGroupService.deleteUserGroup(userId,surveyId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 
 //    @GetMapping("/{groupId}/survey-count")
 //    public ResponseEntity<Integer> getSurveyCountByGroupId(@PathVariable("groupId") Long groupId) {

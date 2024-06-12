@@ -11,6 +11,7 @@ public class ResponseDTO {
     private Long questionId;
     private Long userId;
     private String responseText;
+    private Long choiceId;
 
     // 생성자, 게터, 세터, toString 등은 생략했습니다.
 }

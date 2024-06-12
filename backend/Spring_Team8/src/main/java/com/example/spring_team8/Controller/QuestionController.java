@@ -54,6 +54,7 @@ public class QuestionController {
             question.setSurvey(survey);
             question.setQuestionText(dto.getQuestionText());
             question.setRequired(dto.isRequired());
+            question.setType(dto.getType());
             questions.add(question);
         }
         List<Question> createdQuestions = questionService.createQuestions(questions);

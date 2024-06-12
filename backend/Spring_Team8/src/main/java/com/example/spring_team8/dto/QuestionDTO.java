@@ -11,5 +11,6 @@ public class QuestionDTO {
     private Long surveyId;
     private boolean required;
     private String questionText;
+    private Boolean type;
 
 }

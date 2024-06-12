@@ -46,8 +46,10 @@ public class UserGroupService {
         }
     }
 
-    public void deleteUserGroup(Long id) {
-        userGroupRepository.deleteById(id);
+    public void deleteUserGroup(Long userId, Long surveyId) {
+        Optional<UserGroup> optionaluserGroup = userGroupRepository.findByUserUserIdAndSurveySurveyId(userId, surveyId);
+        UserGroup userGroup = optionaluserGroup.get();
+        userGroupRepository.delete(userGroup);
     }
 
 
